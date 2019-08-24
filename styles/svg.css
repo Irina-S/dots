@@ -1,0 +1,20 @@
+rect{
+    stroke:#8a8bbb80;
+    stroke-width:0.5px;
+    fill: #ffffff;
+    /* box-sizing: border-box; */
+}
+
+circle{
+    /* stroke:#dddddd3b; */
+    fill: #ffffff3b;
+}
+
+circle:hover{
+    fill: #9494943b;
+    cursor:pointer;
+}
+
+polygon{
+    fill: #9494943b;
+}
