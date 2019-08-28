@@ -94,11 +94,11 @@ body{
 }
 
     .main-menu > p{
-        font-size:1.2em;
+        font-size:1.4em;
     }
 
     .main-menu > button{
-        width:50%;
+        width:35%;
         height:3em;
         margin-bottom:20px;
         margin-top:20px;

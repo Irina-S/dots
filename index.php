@@ -8,14 +8,14 @@
     <body>
         <!-- скрывает содержимое при ajax-запросе -->
         <div class="filler">    
-            <div class="name-input">
-                <form action="game.php" method="get">
+            <form action="game.php" method="get">
+                <div class="name-input">
                     <p>Enter your name:</p>
                     <input type="hidden" name="mode" value="">
                     <input name = "username" type="text">
                     <input type="submit" value="Start!">
-                </form>
-            </div>
+                </div>    
+            </form> 
         </div>
         <h3 class="header">Welcome to "DOTS"!</h3>
         <div class="main-menu">

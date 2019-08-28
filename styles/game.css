@@ -12,6 +12,29 @@
     align-items: center; */
 }
 
+    .score-counter{
+        position:relative;
+        width:500px;
+        top:70px;
+        left:calc(50% - 250px);
+        height:1.7em;
+        font-size: 1.5em;
+        text-align: center;
+    }
+
+        .scores{
+            display:inline-block;
+            color:#000000;
+        }
+
+            .player1, .red-scores{
+                color:#ff0000;
+            }
+
+            .player2, .blue-scores{
+                color:#0000ff;
+            }
+
     .field-wrapper{
         flex:10;
         border: 2px solid #8f8f8f;

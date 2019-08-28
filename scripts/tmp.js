@@ -1,8 +1,3 @@
-// "use strict";
-import {Dot} from './classes/Dot.js';
-import {Surrounding} from './classes/Surrounding.js';
-import {Field} from './classes/Field.js';
-
 var RED_COLOR = '#ff0000', BLUE_COLOR = '#0000ff';
 
 var n = 20;//число клеток
@@ -11,9 +6,9 @@ var w = field_svg.node.clientWidth / n; //ширина клетки
 var h = field_svg.node.clientHeight / n; //высота клетки
 
 //создание объекта поля
-var gameField= new Field(20, 20);
-gameField.init();
-gameField.svg = field_svg;
+var field= new Field(20, 20);
+field.init();
+field.svg = field_svg;
 
 // создание сетки
 for (var i = 0; i<n; i++){
@@ -35,23 +30,23 @@ for (var i = 0; i<n; i++){
                 var x = +this.node.dataset.x;
                 var y = +this.node.dataset.y;
                 // меняем статус точки, по которой был щелчек
-                console.log(gameField.getCurMoveColor());
+                console.log(field.getCurMoveColor());
                 // сообщаем точке цвет
                 console.log(document.getElementById('dot_color').value);
                 if (document.getElementById('dot_color').value==RED_COLOR){
-                    gameField.getDot(x,y).setRedColor();
-                    gameField.getDot(x,y).setActive(document.getElementById('my-name').innerHTML);
+                    field.getDot(x,y).setRedColor();
+                    field.getDot(x,y).setActive(document.getElementById('my-name').innerHTML);
                 }
                 else{
-                    gameField.getDot(x,y).setBlueColor();
-                    gameField.getDot(x,y).setActive(document.getElementById('opponent-name').innerHTML);
+                    field.getDot(x,y).setBlueColor();
+                    field.getDot(x,y).setActive(document.getElementById('opponent-name').innerHTML);
                 }
 
                 // уменьшаем кол-во точек
-                gameField.decFreeDots(1);
+                field.decFreeDots(1);
                 // поппытка построить полигон
-                if (gameField.trySurround(gameField.getDot(x,y))){
-                    var polygon = gameField.getLastSurrounding().getPolygonCoords();
+                if (field.trySurround(field.getDot(x,y))){
+                    var polygon = field.getLastSurrounding().getPolygonCoords();
                     var polygonSVGcoords = [];
                     for (var i=0;i<polygon.length;i++){
                         // копировать несортированные коордиаты
@@ -68,12 +63,12 @@ for (var i = 0; i<n; i++){
                 }
                     
                 if (document.getElementById('dot_color').value==RED_COLOR){
-                    gameField.recalcScores(RED_COLOR);
-                    document.getElementById('red-scores').innerHTML = gameField.getRedScore();
+                    field.recalcScores(RED_COLOR);
+                    document.getElementById('red-scores').innerHTML = field.getRedScore();
                 }
                 else if (document.getElementById('dot_color').value==BLUE_COLOR){
-                    gameField.recalcScores(BLUE_COLOR);
-                    document.getElementById('red-scores').innerHTML = gameField.getBlueScore();
+                    field.recalcScores(BLUE_COLOR);
+                    document.getElementById('red-scores').innerHTML = field.getBlueScore();
                 }
 
             });
@@ -81,9 +76,7 @@ for (var i = 0; i<n; i++){
             var dot = new Dot(i, j);
             dot.svg = dot_svg;
             // передаем его внутрь поля
-            gameField.setDot(i, j, dot);
+            field.setDot(i, j, dot);
         }     
     }
 }
-
-
