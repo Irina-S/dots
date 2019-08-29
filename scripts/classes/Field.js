@@ -16,33 +16,45 @@ export function Field(w, h){
     var freeDots = (w-2)*(h-2);
     var redScore = 0;
     var blueScore = 0;
+    var curMoveColor = RED_COLOR;//первыми ходят красные
 
     var dots = [];
 
     var surroundings = [];
 
-    var curMoveColor = RED_COLOR;//первыми ходят красные
+    
 
     var self = this;
 
     this.svg = '';
 
-    
+    init();
 
     //методы
+    // закрыт
+    function init(){
+            for (var i=1; i<width; i++){
+                dots[i] = [];
+                for (var j=1;j<height; j++){
+                    dots[i][j] = 0;
+                }
+            }
+    }
+
+    function getFieldMatrix(){
+        var matrix = [];
+        for (var i=0;i<dots.length;i++){
+            matrix[i] = [];
+            for (var j=0;j<dots[i].length;j++){
+                matrix[i][j] = dots[i][j].getColor()==RED_COLOR?1:(dots[i][j].getColor()==BLUE_COLOR?-1:0);
+            }
+        }
+        return matrix;
+    }
 
     // открытые
 
-    this.init = function(){
-        for (var i=1; i<width; i++){
-            dots[i] = [];
-            for (var j=1;j<height; j++){
-                dots[i][j] = 0;
-            }
-        }
-    }
-
-
+    
     this.setDot = function(x,y, dot){
         dots[x][y] = dot;
     }
@@ -167,6 +179,7 @@ export function Field(w, h){
                 return -1;
         }
 
+
         function restorePolygonDots(dotsArr){
             var res = [];
             dotsArr.forEach(dotCoords => {
@@ -192,9 +205,8 @@ export function Field(w, h){
 
         // только полигоны
         var polygons = [];
-
         // рабочий массив с путями
-            // где индекс - длинна путей, содеражащихся во вложенном массиве по этому индексу
+        // где индекс - длинна путей, содеражащихся во вложенном массиве по этому индексу
         var pathes = [];        
         // стартовая точка(координаты)
         var startDotCoords = {
@@ -209,6 +221,7 @@ export function Field(w, h){
         }
         // цвет полигона
         var color = startDot.getColor();
+        // 
         var direction = 0;
 
         pathes[0] = null;//нет путей длинной 0
@@ -236,7 +249,6 @@ export function Field(w, h){
                     //если такая точка уже входит в путь продолжаем
                     if (isIncluded(pathes[i][j], nextDotCoords))
                         continue;
-                    
                     // если точка есть добавляем ее к пути и записываем в пути длинной на 1 больше
                     var tmpPath = [];
                     for (var k=0; k<pathes[i][j].length;k++)
@@ -245,12 +257,13 @@ export function Field(w, h){
                     if (pathes[i+1]===undefined)
                         pathes[i+1] = [];
                     pathes[i+1].push(tmpPath);
-                    if (isEqual(startDotCoords, nextDotCoords)){
-                        var tmpPolygon = [];
-                        for (var k=0; k<tmpPath.length;k++)
-                            tmpPolygon.push(tmpPath[k]);
-                        polygons.push(tmpPolygon);
-                    }
+                    // ЧТО ЭТО?
+                    // if (isEqual(startDotCoords, nextDotCoords)){
+                    //     var tmpPolygon = [];
+                    //     for (var k=0; k<tmpPath.length;k++)
+                    //         tmpPolygon.push(tmpPath[k]);
+                    //     polygons.push(tmpPolygon);
+                    // }
 
                 }
 
@@ -259,6 +272,7 @@ export function Field(w, h){
         }
         console.log('все пути:')
         console.dir(pathes);
+        console.dir(polygons);
         // отбираем из путей только полигоны
         // рассматриваем пути не менее 4х точек
         for (i=4;i<pathes.length;i++){
@@ -271,35 +285,39 @@ export function Field(w, h){
         console.log('из них полигоны:');
         console.dir(polygons);
 
-        var surrounding = polygons[polygons.length-1];
+        // var tmpSurroundingCoords = polygons[polygons.length-1];
+
+        
 
         console.log('итоговый полигон:');
-        console.dir(surrounding);
+        console.dir(tmpSurroundingCoords);
 
-        // если возможно построить полигон
-        if (surrounding){
-            // сортируем точки в полигоне
-            var sortedSurrounding = [];//массив координат, в котором координаты отсортированны по у, 
+        // из всех возможных полигонов ищем соответсующий условиям
+        // 1 максимальный по колличеству точек
+        // 2 захвативший хотя бы 1 врага
+        // 3 не покрывающий уже существующие полигоны(окружения) и не пересекающийся с нимим
+        for (var k=polygons.length-1;k>=0;k--){
+            var tmpSurroundingCoords = polygons[i];//координаты рассматриваемого полигона
+            var sortedSurrounding = [];//массив координат, в котором координаты будут отсортированны по у, 
                                         //а при равных y по x
-            var surroundingCopy = [];//копия массива, что бы не испортить полигон
-            for(var i =0; i<surrounding.length;i++){
-                surroundingCopy.push({
-                    x:surrounding[i].x,
-                    y:surrounding[i].y
+            var tmpSurroundingCoordsCopy = [];//копия массива, что бы не испортить полигон
+            for(var i =0; i<tmpSurroundingCoords.length;i++){
+                tmpSurroundingCoordsCopy.push({
+                    x:tmpSurroundingCoords[i].x,
+                    y:tmpSurroundingCoords[i].y
                 });
             }
-
-            surroundingCopy.sort(sortY);//сортировка по y
-            // //сортировка по равным y 
-            for (var i=surroundingCopy[0].y;i<=surroundingCopy[surroundingCopy.length-1].y;i++){
-                var tmpDots = surroundingCopy.filter(item => item.y == i);
+            tmpSurroundingCoordsCopy.sort(sortY);//сортировка по y
+            // //сортировка по x при равных y 
+            for (var i=tmpSurroundingCoordsCopy[0].y;i<=tmpSurroundingCoordsCopy[tmpSurroundingCoordsCopy.length-1].y;i++){
+                var tmpDots = tmpSurroundingCoordsCopy.filter(item => item.y == i);
                 tmpDots.sort(sortX);
                 for (var j=0; j<tmpDots.length;j++)
                     sortedSurrounding.push(tmpDots[j]);
             }
 
-            console.log('полигон с отсортированными вершинами');
-            console.dir(sortedSurrounding);
+            // console.log('полигон с отсортированными вершинами');
+            // console.dir(sortedSurrounding);
 
             //выявляем координаты внутренних точек
             var innerDotsCoords = [];
@@ -321,24 +339,32 @@ export function Field(w, h){
                     }
                 }
             }
-            console.log('внутренние точки');
-            console.dir(innerDotsCoords);
+            // console.log('внутренние точки');
+            // console.dir(innerDotsCoords);
 
             // фомируем результат
-            var polygonDots = restorePolygonDots(surrounding);
+            var polygonDots = restorePolygonDots(tmpSurroundingCoords);
             var eatenDots = restoreEatenDots(innerDotsCoords, color);
-            console.dir(eatenDots);
+            // console.dir(eatenDots);
+            if (polygonDots && eatenDots.length>0){
+
+                var tmpSurrounding = new Surrounding(startDot.getOwner(), color, polygonDots, innerDotsCoords, eatenDots);
+                var isAlowed = true;
+                surroundings.forEach(surrounding =>{
+                    if (surrounding.hasIntersectionsWith(tmpSurrounding)){
+                        isAlowed = false;
+                        // break;
+                    }
+                })
+                if (isAlowed){
+                    surroundings.push(tmpSurrounding);
+                    return true;
+                }
+                    
+            }
 
         }
-        // если можно построить полигон и есть захваченные точки
-        if (polygonDots && eatenDots.length>0){
-            var newSurrounding = new Surrounding(startDot.getOwner(), color, polygonDots, eatenDots);
-            surroundings.push(newSurrounding);
-            console.log('новое окружение успешно построенно');
-            return true;
-        }
-        else
-            return false;
+        return false;
         
     }
 

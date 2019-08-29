@@ -12,7 +12,6 @@ var h = field_svg.node.clientHeight / n; //высота клетки
 
 //создание объекта поля
 var gameField= new Field(20, 20);
-gameField.init();
 gameField.svg = field_svg;
 
 // создание сетки
@@ -35,9 +34,9 @@ for (var i = 0; i<n; i++){
                 var x = +this.node.dataset.x;
                 var y = +this.node.dataset.y;
                 // меняем статус точки, по которой был щелчек
-                console.log(gameField.getCurMoveColor());
+                // console.log(gameField.getCurMoveColor());
                 // сообщаем точке цвет
-                console.log(document.getElementById('dot_color').value);
+                // console.log(document.getElementById('dot_color').value);
                 if (document.getElementById('dot_color').value==RED_COLOR){
                     gameField.getDot(x,y).setRedColor();
                     gameField.getDot(x,y).setActive(document.getElementById('my-name').innerHTML);
@@ -62,9 +61,9 @@ for (var i = 0; i<n; i++){
                     }
                     var polygon = field_svg.polygon(polygonSVGcoords);
                     polygon.node.classList = document.getElementById('dot_color').value==RED_COLOR?"red":"blue";
-                    console.dir(polygon);
-                    console.dir(polygonSVGcoords);
-                    console.dir(polygon);
+                    // console.dir(polygon);
+                    // console.dir(polygonSVGcoords);
+                    // console.dir(polygon);
                 }
                     
                 if (document.getElementById('dot_color').value==RED_COLOR){

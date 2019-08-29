@@ -9,10 +9,11 @@ import {RED_COLOR, BLUE_COLOR} from './game-consts.js'
  * @param {*} polygonArr координаты точек полигона
  * @param {*} eatenDotsArr координаты захваченных точек
  */
-export function Surrounding(owner_name, color_code, polygonArr, eatenDotsArr){
+export function Surrounding(owner_name, color_code, polygonArr, innerDotsArr, eatenDotsArr){
     var owner = owner_name;
     var color = color_code;
     var polygonDots = polygonArr;
+    var innerDots = innerDotsArr;
     var eatenDots = eatenDotsArr;
 
     this.svg = '';
@@ -33,6 +34,23 @@ export function Surrounding(owner_name, color_code, polygonArr, eatenDotsArr){
       */
     this.getEatenCoords = function(){
         return eatenDots;
+    }
+
+    this.getInnerDotsCoords = function(){
+        return innerDots;
+    }
+
+    this.hasIntesectionsWith = function(anotherPolygon){
+        var anotherCoords = anotherPolygon.getInnerDotsCoords();
+        for (var i=0; i<innerDots.length; i++){
+            for (var j = 0; j<anotherCoords.length; j++){
+                if (JSON.stringify(innerDots[i]) == JSON.stringify(anotherCoords[j])){
+                    return true;
+                }
+
+            }
+        }
+        return false;
     }
 
     console.dir(owner);
