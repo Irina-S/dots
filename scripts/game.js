@@ -33,10 +33,7 @@ for (var i = 0; i<n; i++){
                 //выясняем координаты щелчка
                 var x = +this.node.dataset.x;
                 var y = +this.node.dataset.y;
-                // меняем статус точки, по которой был щелчек
-                // console.log(gameField.getCurMoveColor());
-                // сообщаем точке цвет
-                // console.log(document.getElementById('dot_color').value);
+
                 if (document.getElementById('dot_color').value==RED_COLOR){
                     gameField.getDot(x,y).setRedColor();
                     gameField.getDot(x,y).setActive(document.getElementById('my-name').innerHTML);
@@ -47,9 +44,10 @@ for (var i = 0; i<n; i++){
                 }
 
                 // уменьшаем кол-во точек
-                gameField.decFreeDots(1);
-                // поппытка построить полигон
+                gameField.decFreeDots();
+                // попытка построить полигон
                 if (gameField.trySurround(gameField.getDot(x,y))){
+                    // обрабатываем графику
                     var poly = gameField.getLastSurrounding().getPolygonCoords();
                     var polygonSVGcoords = [];
                     for (var i=0;i<poly.length;i++){
@@ -61,8 +59,24 @@ for (var i = 0; i<n; i++){
                     }
                     var polygon = field_svg.polygon(polygonSVGcoords);
                     polygon.node.classList = document.getElementById('dot_color').value==RED_COLOR?"red":"blue";
+                    // пересчитываем очки
+                    document.getElementById('red-scores').innerHTML = gameField.getRedScore();
+                    document.getElementById('blue-scores').innerHTML = gameField.getBlueScore();
                 }
-
+                else{
+                    // переключаем игрока(цвет)
+                    gameField.toggleColor();
+                    document.getElementById('dot_color').querySelector('[value="'+gameField.getCurMoveColor()+'"]').selected = true
+                }
+                // если все поле занято
+                if (gameField.getFreeDots()==0){
+                    if (gameField.getRedScore() == gameField.getBlueScore())
+                        document.getElementById('winner').innerHTML = 'Ничья!'
+                    else if ((gameField.getRedScore() > gameField.getBlueScore()))
+                        document.getElementById('winner').innerHTML = 'Красные победили!'
+                    else if ((gameField.getRedScore() < gameField.getBlueScore()))
+                        document.getElementById('winner').innerHTML = 'Синие победили!'
+                }
 
             });
             // создаем объект точки

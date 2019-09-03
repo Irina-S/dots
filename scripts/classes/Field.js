@@ -59,12 +59,7 @@ export function Field(w, h){
         else
             return false;
     }
-
-    function isEqual(dotCoords1, dotCoords2){
-        return JSON.stringify(dotCoords1)==JSON.stringify(dotCoords2);
-    }
-    
-    
+ 
     
     function sortY(dotCoords1, dotCoords2){
         // console.dir([dotCoords1, dotCoords2]);
@@ -172,9 +167,6 @@ export function Field(w, h){
         return polygons.length>0?polygons:false;
     }
 
-    function checkPolygon(polygon){
-
-    }
 
     function copyDots(dotsArr){
         var copy = [];
@@ -281,15 +273,13 @@ export function Field(w, h){
         return curMoveColor;
     }
 
-    this.decFreeDots = function(dots){
-        freeDots-=dots;
+    this.decFreeDots = function(){
+        freeDots--;
     }
 
     this.getFreeDots = function(){
         return freeDots;
     }
-
-
 
     // попытка построить полигон
     this.trySurround = function(startDot){
@@ -330,7 +320,11 @@ export function Field(w, h){
                     if (eatenDots.length>0){
                         tmpSurrounding.setEatenDots(eatenDots);
                         surroundings.push(tmpSurrounding);
-
+                        // подсчитываем очки
+                        if (curMoveColor==RED_COLOR)
+                            redScore+=eatenDots.length
+                        else if(curMoveColor==BLUE_COLOR)
+                            blueScore+=eatenDots.length;
                         console.dir(tmpSurrounding);
                         return true;
                     }
@@ -355,12 +349,15 @@ export function Field(w, h){
         return surroundings[surroundings.length-1] || false;
     }
 
-
     this.getRedScore = function(){
         return redScore;
     }
 
     this.getBlueScore = function(){
         return blueScore;
+    }
+
+    this.toggleColor = function(){
+        curMoveColor = curMoveColor==RED_COLOR?BLUE_COLOR:RED_COLOR;
     }
 }

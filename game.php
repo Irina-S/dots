@@ -18,6 +18,8 @@
             </div>
             <span class="player2" id="opponent-name">opponent</span>
         </div>
+        <div class="winner" id="winner">
+        </div>
         <!-- <h3 class="header">Welcome to "DOTS"!</h3> -->
         <div class="wrapper">
             
