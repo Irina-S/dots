@@ -107,4 +107,8 @@ export function Dot(x, y){
         return color;
     }
 
+    this.getColorCode = function(){
+        return color==RED_COLOR?1:(color==BLUE_COLOR?-1:0);
+    }
+
 }

@@ -36,11 +36,15 @@ export function Surrounding(owner_name, color_code, polygonArr, innerDotsArr, ea
         return eatenDots;
     }
 
+    this.setEatenDots = function(eatenDotsArr){
+        eatenDots = eatenDotsArr;
+    }
+
     this.getInnerDotsCoords = function(){
         return innerDots;
     }
 
-    this.hasIntesectionsWith = function(anotherPolygon){
+    this.hasIntersectionsWith = function(anotherPolygon){
         var anotherCoords = anotherPolygon.getInnerDotsCoords();
         for (var i=0; i<innerDots.length; i++){
             for (var j = 0; j<anotherCoords.length; j++){

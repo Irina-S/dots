@@ -50,30 +50,19 @@ for (var i = 0; i<n; i++){
                 gameField.decFreeDots(1);
                 // поппытка построить полигон
                 if (gameField.trySurround(gameField.getDot(x,y))){
-                    var polygon = gameField.getLastSurrounding().getPolygonCoords();
+                    var poly = gameField.getLastSurrounding().getPolygonCoords();
                     var polygonSVGcoords = [];
-                    for (var i=0;i<polygon.length;i++){
+                    for (var i=0;i<poly.length;i++){
                         // копировать несортированные коордиаты
-                        var polyX = polygon[i].getX()*w;
-                        var polyY = polygon[i].getY()*h;
+                        var polyX = poly[i].x*w;
+                        var polyY = poly[i].y*h;
                         polygonSVGcoords.push(polyX);
                         polygonSVGcoords.push(polyY);
                     }
                     var polygon = field_svg.polygon(polygonSVGcoords);
                     polygon.node.classList = document.getElementById('dot_color').value==RED_COLOR?"red":"blue";
-                    // console.dir(polygon);
-                    // console.dir(polygonSVGcoords);
-                    // console.dir(polygon);
                 }
-                    
-                if (document.getElementById('dot_color').value==RED_COLOR){
-                    gameField.recalcScores(RED_COLOR);
-                    document.getElementById('red-scores').innerHTML = gameField.getRedScore();
-                }
-                else if (document.getElementById('dot_color').value==BLUE_COLOR){
-                    gameField.recalcScores(BLUE_COLOR);
-                    document.getElementById('red-scores').innerHTML = gameField.getBlueScore();
-                }
+
 
             });
             // создаем объект точки

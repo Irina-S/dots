@@ -19,6 +19,7 @@ export function Field(w, h){
     var curMoveColor = RED_COLOR;//первыми ходят красные
 
     var dots = [];
+    var fieldMatrix = [];
 
     var surroundings = [];
 
@@ -35,21 +36,194 @@ export function Field(w, h){
     function init(){
             for (var i=1; i<width; i++){
                 dots[i] = [];
+                fieldMatrix[i] = []
                 for (var j=1;j<height; j++){
                     dots[i][j] = 0;
+                    fieldMatrix[i][j] = 0;
                 }
             }
     }
 
-    function getFieldMatrix(){
-        var matrix = [];
-        for (var i=0;i<dots.length;i++){
-            matrix[i] = [];
-            for (var j=0;j<dots[i].length;j++){
-                matrix[i][j] = dots[i][j].getColor()==RED_COLOR?1:(dots[i][j].getColor()==BLUE_COLOR?-1:0);
+    function isIncluded(coordsArr, dotCoords){
+        for (var i = 0; i<coordsArr.length;i++){
+            if (JSON.stringify(coordsArr[i])==JSON.stringify(dotCoords))
+                return true;
+        }
+        return false;
+    }
+
+    // вспомогательная функция, проверяющая являются ли координаты соседями
+    function isNeighbohors(dotCoords1, dotCoords2){
+        if (Math.abs(dotCoords1.x-dotCoords2.x)<=1 && Math.abs(dotCoords1.y-dotCoords2.y)<=1)
+            return true
+        else
+            return false;
+    }
+
+    function isEqual(dotCoords1, dotCoords2){
+        return JSON.stringify(dotCoords1)==JSON.stringify(dotCoords2);
+    }
+    
+    
+    
+    function sortY(dotCoords1, dotCoords2){
+        // console.dir([dotCoords1, dotCoords2]);
+        if (dotCoords1.y > dotCoords2.y)
+            return 1;
+        if (dotCoords1.y == dotCoords2.y)
+            return 0;
+        if (dotCoords1.y < dotCoords2.y)
+            return -1;
+    }
+    
+    function sortX(dotCoords1, dotCoords2){
+        // console.dir([dotCoords1, dotCoords2]);
+        if (dotCoords1.x > dotCoords2.x)
+            return 1;
+        if (dotCoords1.x == dotCoords2.x)
+            return 0;
+        if (dotCoords1.x < dotCoords2.x)
+            return -1;
+    }
+
+    function sortXandY(polygonDots){
+        var sortedDots = [];
+        polygonDots.sort(sortY);//сортировка по y
+        // //сортировка по x при равных y 
+        for (var i=polygonDots[0].y;i<=polygonDots[polygonDots.length-1].y;i++){
+            var tmpDots = polygonDots.filter(item => item.y == i);
+            tmpDots.sort(sortX);
+            for (var j=0; j<tmpDots.length;j++)
+                sortedDots.push(tmpDots[j]);
+        }
+        return sortedDots;
+    }
+
+    function buildPathes(startDot){
+        // стартовая точка(координаты)
+        var startDotCoords = {
+            x:startDot.getX(),
+            y:startDot.getY()
+        }
+        // текущая точка и ее координаты
+        var curDot = startDot;
+        var curDotCoords = {
+            x:curDot.getX(),
+            y:curDot.getY()
+        }
+        // цвет полигона
+        var color = startDot.getColorCode();
+        // 
+        var direction = 0;
+        var pathes = [];        
+        //нет путей длинной 0
+        pathes[0] = null;
+        pathes[1] = [[curDotCoords]];
+        // цикл по путям разной длинны, пока есть что перебирать
+        for (var i=1;pathes[i]!==undefined;i++){
+            // цикл по путям длинной i
+            for (var j=0;j<pathes[i].length;j++){
+                // рассматриваем последнюю точку в пути под номером j среди путей длинной i
+                curDotCoords = pathes[i][j][i-1];
+                // curDot = self.getDot(curDotCoords.x, curDotCoords.y);
+                // цикл по направлениям вокруг текущей точки
+                direction = 0;
+                while (direction < DIRECTIONS){
+                    var nextDotCoords = self.getNeigbohor(curDotCoords, direction, color);   
+                    direction++;
+                    // если нет такой точки продолжаем
+                    if (!nextDotCoords)
+                        continue;
+                    //если такая точка уже входит в путь продолжаем
+                    if (isIncluded(pathes[i][j], nextDotCoords))
+                        continue;
+                    // если точка есть добавляем ее к пути и записываем в пути длинной на 1 больше
+                    var tmpPath = [];
+                    for (var k=0; k<pathes[i][j].length;k++)
+                        tmpPath.push(pathes[i][j][k]);
+                    tmpPath.push(nextDotCoords);
+                    if (pathes[i+1]===undefined)
+                        pathes[i+1] = [];
+                    pathes[i+1].push(tmpPath);
+                }
+
+            }
+
+            
+        }
+        console.dir(pathes);
+        return pathes;
+    }
+
+    function choosePolygons(pathes){
+        // только полигоны
+        var polygons = [];
+        // отбираем из путей только полигоны
+        // рассматриваем пути не менее 4х точек
+        for (var i=4;i<pathes.length;i++){
+            for (var j=0;j<pathes[i].length;j++){
+                // если первая и последняя точки пути соседи, значит полигон замкнулся
+                if (isNeighbohors(pathes[i][j][0], pathes[i][j][pathes[i][j].length-1]))
+                    polygons.push(pathes[i][j]);
             }
         }
-        return matrix;
+        console.log('из них полигоны:');
+        console.dir(polygons);
+        return polygons.length>0?polygons:false;
+    }
+
+    function checkPolygon(polygon){
+
+    }
+
+    function copyDots(dotsArr){
+        var copy = [];
+        for(var i =0; i<dotsArr.length;i++){
+            copy.push({
+                x:dotsArr[i].x,
+                y:dotsArr[i].y
+            });
+        }
+        return copy;
+    }
+
+    function getInnerDots(sortedDots){
+        var innerDots = [];
+        // // цикл по y = i
+        for (var i=sortedDots[0].y+1; i<=sortedDots[sortedDots.length-1].y-1;i++){
+            var tmpDots = sortedDots.filter(item => item.y == i);
+            // цикл по каждому отрезку
+            for (var j = 0; j<tmpDots.length;j=j+2){
+                if (tmpDots[j+1]!=undefined){
+                    var x1 = tmpDots[j].x;
+                    var x2 = tmpDots[j+1].x;
+                    while (++x1<x2){
+                        innerDots.push({
+                            x:x1,
+                            y:i
+                        });
+                    }
+                }
+            }
+        }
+        return innerDots;
+    }
+
+    function getEatenDots(innerDotsArr, color){
+        var res = [];
+        innerDotsArr.forEach(dotCoords => {
+            var dot = self.getDot(dotCoords.x, dotCoords.y);
+            if (dot.getColor()!=color && dot.isActive() && !dot.isEaten()){
+                res.push({
+                    x:dot.getX(),
+                    y:dot.getY()
+                });
+                dot.setEaten();
+                // fieldMatrix[dotCoords.x][dotCoords.y] = 0;
+            }
+                
+        });
+        return res;
     }
 
     // открытые
@@ -57,57 +231,50 @@ export function Field(w, h){
     
     this.setDot = function(x,y, dot){
         dots[x][y] = dot;
+        fieldMatrix[x][y] = dot.getColorCode();
     }
 
     this.getDot = function(x,y){
         return dots[x][y];
     }
 
-    // возвращает соседа в указанном направлении, или false в случае его отсутсвия или ошибки
-    this.getNeigbohor = function(dot, direction){
+    this.getNeigbohor = function(dotCoords, direction, color){
         var res = false;
         // ЗДЕСЬ МОГУТ БЫТЬ ИСКЛЮЧЕНИЯ!!!!
         // console.dir(dot);
-        var x = dot.getX();
-        var y = dot.getY();
+        var x = dotCoords.x;
+        var y = dotCoords.y;
         switch (direction){
             case 0: 
                 if (y-1>0)
-                    res = dots[x][y-1];
+                    res = {x:x, y:y-1};
                 break;
         case 1: if (y-1>0 && x+1<width)
-                    res = dots[x+1][y-1];
+                    res = {x:x+1, y:y-1};
                 break;
         case 2:if (x+1<width)
-                    res = dots[x+1][y];
+                    res = {x:x+1, y:y};
                 break;
         case 3:if (y+1<height && x+1<width)
-                    res = dots[x+1][y+1];
+                    res = {x:x+1, y:y+1};
                 break;
         case 4:if (y+1<height)
-                    res = dots[x][y+1];
+                    res = {x:x, y:y+1};
                 break;
         case 5:if (x-1>0 && y+1<height)
-                    res = dots[x-1][y+1];
+                    res = {x:x-1, y:y+1};
                 break;
         case 6:if (x-1>0)
-                    res = dots[x-1][y];
+                    res = {x:x-1, y:y};
                 break;
         case 7:if (x-1>0 && y-1>0)
-                    res = dots[x-1][y-1];
+                    res = {x:x-1, y:y-1};
                 break;
         }
-        return res;
-    }
+        if (!res)
+            return false;
+        return dots[res.x][res.y].getColorCode()==color?(dots[res.x][res.y].isEaten()?false:res):false;
 
-    // возвращает соседа в указанном направлении заданного цвета
-    this.getSameColorNeigbohor = function(dot, direction, color){
-        var dot = self.getNeigbohor(dot, direction);
-
-        if (dot)
-            if (dot.getColor()==color)
-                return dot;
-        return false;
     }
 
     this.getCurMoveColor = function(){
@@ -122,233 +289,35 @@ export function Field(w, h){
         return freeDots;
     }
 
-    // переклчение цвета на противоположный
-    this.toggleColor=function(){
-        if (curMoveColor==RED_COLOR)
-            curMoveColor = BLUE_COLOR;
-        else
-            curMoveColor = RED_COLOR;
-    }
-    //передача права ходить второму игроку
-    this.togglePlayer = function(){
-        self.toggleColor();
-        // требует реализации
-    }
+
 
     // попытка построить полигон
     this.trySurround = function(startDot){
-        // вспомогательная функция сравнивающая координаты в массиве с искомыми
-        function isIncluded(coordsArr, dotCoords){
-            for (var i = 0; i<coordsArr.length;i++){
-                if (JSON.stringify(coordsArr[i])==JSON.stringify(dotCoords))
-                    return true;
-            }
-            return false;
-        }
-
-        // вспомогательная функция, проверяющая на равенство координтаы
-        function isEqual(dotCoords1, dotCoords2){
-            return JSON.stringify(dotCoords1)==JSON.stringify(dotCoords2);
-        }
-
-        // вспомогательная функция, проверяющая являются ли координаты соседями
-        function isNeighbohors(dotCoords1, dotCoords2){
-            if (Math.abs(dotCoords1.x-dotCoords2.x)<=1 && Math.abs(dotCoords1.y-dotCoords2.y)<=1)
-                return true
-            else
-                return false;
-        }
-
-        function sortY(dotCoords1, dotCoords2){
-            // console.dir([dotCoords1, dotCoords2]);
-            if (dotCoords1.y > dotCoords2.y)
-                return 1;
-            if (dotCoords1.y == dotCoords2.y)
-                return 0;
-            if (dotCoords1.y < dotCoords2.y)
-                return -1;
-        }
-
-        function sortX(dotCoords1, dotCoords2){
-            // console.dir([dotCoords1, dotCoords2]);
-            if (dotCoords1.x > dotCoords2.x)
-                return 1;
-            if (dotCoords1.x == dotCoords2.x)
-                return 0;
-            if (dotCoords1.x < dotCoords2.x)
-                return -1;
-        }
-
-
-        function restorePolygonDots(dotsArr){
-            var res = [];
-            dotsArr.forEach(dotCoords => {
-                var dot = self.getDot(dotCoords.x, dotCoords.y);
-                res.push(dot);
-            });
-            return res;
-        }
-
-        function restoreEatenDots(innerDotsArr, color){
-            var res = [];
-            innerDotsArr.forEach(dotCoords => {
-                var dot = self.getDot(dotCoords.x, dotCoords.y);
-                if (dot.getColor()!=color && dot.getStatus()!="inactive" && dot.getStatus()!="eaten"){
-                    res.push(dot);
-                    dot.setEaten();
-                }
-                    
-            });
-            return res;
-        }
-        // 
-
-        // только полигоны
-        var polygons = [];
-        // рабочий массив с путями
-        // где индекс - длинна путей, содеражащихся во вложенном массиве по этому индексу
-        var pathes = [];        
-        // стартовая точка(координаты)
-        var startDotCoords = {
-            x:startDot.getX(),
-            y:startDot.getY()
-        }
-        // текущая точка и ее координаты
-        var curDot = startDot;
-        var curDotCoords = {
-            x:curDot.getX(),
-            y:curDot.getY()
-        }
-        // цвет полигона
         var color = startDot.getColor();
-        // 
-        var direction = 0;
+        var pathes = buildPathes(startDot);
+        if (pathes){
+            var polygons = choosePolygons(pathes);
+            // из всех возможных полигонов ищем соответсующий условиям
+            // 1 максимальный по колличеству точек
+            // 2 захвативший хотя бы 1 врага
+            // 3 не покрывающий уже существующие полигоны(окружения) и не пересекающийся с нимим
+            for (var i=0;i<polygons.length-1;i++){
+                var tmpSurroundingCoords = polygons[i];//координаты рассматриваемого полигона
+                // копируем
+                var tmpSurroundingCoordsCopy = copyDots(tmpSurroundingCoords);//копия массива, что бы не испортить полигон
+                //массив координат, в котором координаты будут отсортированны по у и x              
+                var sortedSurrounding = sortXandY(tmpSurroundingCoordsCopy);
 
-        pathes[0] = null;//нет путей длинной 0
-        pathes[1] = [[curDotCoords]];
+                // console.log('полигон с отсортированными вершинами');
+                // console.dir(sortedSurrounding);
 
-        // цикл по путям разной длинны, пока есть что перебирать
-        for (var i=1;pathes[i]!==undefined;i++){
-            // цикл по путям длинной i
-            for (var j=0;j<pathes[i].length;j++){
-                // рассматриваем последнюю точку в пути под номером j среди путей длинной i
-                curDotCoords = pathes[i][j][i-1];
-                curDot = self.getDot(curDotCoords.x, curDotCoords.y);
-                // цикл по направлениям вокруг текущей точки
-                direction = 0;
-                while (direction < DIRECTIONS){
-                    var nextDot = self.getSameColorNeigbohor(curDot, direction, color);   
-                    direction++;
-                    // если нет такой точки продолжаем
-                    if (!nextDot)
-                        continue;
-                    var nextDotCoords = {
-                        x:nextDot.getX(),
-                        y:nextDot.getY()
-                    }
-                    //если такая точка уже входит в путь продолжаем
-                    if (isIncluded(pathes[i][j], nextDotCoords))
-                        continue;
-                    // если точка есть добавляем ее к пути и записываем в пути длинной на 1 больше
-                    var tmpPath = [];
-                    for (var k=0; k<pathes[i][j].length;k++)
-                        tmpPath.push(pathes[i][j][k]);
-                    tmpPath.push(nextDotCoords);
-                    if (pathes[i+1]===undefined)
-                        pathes[i+1] = [];
-                    pathes[i+1].push(tmpPath);
-                    // ЧТО ЭТО?
-                    // if (isEqual(startDotCoords, nextDotCoords)){
-                    //     var tmpPolygon = [];
-                    //     for (var k=0; k<tmpPath.length;k++)
-                    //         tmpPolygon.push(tmpPath[k]);
-                    //     polygons.push(tmpPolygon);
-                    // }
+                //выявляем координаты внутренних точек
+                var innerDotsCoords = getInnerDots(sortedSurrounding);
 
-                }
+                // console.log('внутренние точки');
+                // console.dir(innerDotsCoords);
 
-            }
-            
-        }
-        console.log('все пути:')
-        console.dir(pathes);
-        console.dir(polygons);
-        // отбираем из путей только полигоны
-        // рассматриваем пути не менее 4х точек
-        for (i=4;i<pathes.length;i++){
-            for (j=0;j<pathes[i].length;j++){
-                // если первая и последняя точки пути соседи, значит полигон замкнулся
-                if (isNeighbohors(pathes[i][j][0], pathes[i][j][pathes[i][j].length-1]))
-                    polygons.push(pathes[i][j]);
-            }
-        }
-        console.log('из них полигоны:');
-        console.dir(polygons);
-
-        // var tmpSurroundingCoords = polygons[polygons.length-1];
-
-        
-
-        console.log('итоговый полигон:');
-        console.dir(tmpSurroundingCoords);
-
-        // из всех возможных полигонов ищем соответсующий условиям
-        // 1 максимальный по колличеству точек
-        // 2 захвативший хотя бы 1 врага
-        // 3 не покрывающий уже существующие полигоны(окружения) и не пересекающийся с нимим
-        for (var k=polygons.length-1;k>=0;k--){
-            var tmpSurroundingCoords = polygons[i];//координаты рассматриваемого полигона
-            var sortedSurrounding = [];//массив координат, в котором координаты будут отсортированны по у, 
-                                        //а при равных y по x
-            var tmpSurroundingCoordsCopy = [];//копия массива, что бы не испортить полигон
-            for(var i =0; i<tmpSurroundingCoords.length;i++){
-                tmpSurroundingCoordsCopy.push({
-                    x:tmpSurroundingCoords[i].x,
-                    y:tmpSurroundingCoords[i].y
-                });
-            }
-            tmpSurroundingCoordsCopy.sort(sortY);//сортировка по y
-            // //сортировка по x при равных y 
-            for (var i=tmpSurroundingCoordsCopy[0].y;i<=tmpSurroundingCoordsCopy[tmpSurroundingCoordsCopy.length-1].y;i++){
-                var tmpDots = tmpSurroundingCoordsCopy.filter(item => item.y == i);
-                tmpDots.sort(sortX);
-                for (var j=0; j<tmpDots.length;j++)
-                    sortedSurrounding.push(tmpDots[j]);
-            }
-
-            // console.log('полигон с отсортированными вершинами');
-            // console.dir(sortedSurrounding);
-
-            //выявляем координаты внутренних точек
-            var innerDotsCoords = [];
-
-            // // цикл по y = i
-            for (var i=sortedSurrounding[0].y+1; i<=sortedSurrounding[sortedSurrounding.length-1].y-1;i++){
-                var tmpDots = sortedSurrounding.filter(item => item.y == i);
-                // цикл по каждому отрезку
-                for (var j = 0; j<tmpDots.length;j=j+2){
-                    if (tmpDots[j+1]!=undefined){
-                        var x1 = tmpDots[j].x;
-                        var x2 = tmpDots[j+1].x;
-                        while (++x1<x2){
-                            innerDotsCoords.push({
-                                x:x1,
-                                y:i
-                            });
-                        }
-                    }
-                }
-            }
-            // console.log('внутренние точки');
-            // console.dir(innerDotsCoords);
-
-            // фомируем результат
-            var polygonDots = restorePolygonDots(tmpSurroundingCoords);
-            var eatenDots = restoreEatenDots(innerDotsCoords, color);
-            // console.dir(eatenDots);
-            if (polygonDots && eatenDots.length>0){
-
-                var tmpSurrounding = new Surrounding(startDot.getOwner(), color, polygonDots, innerDotsCoords, eatenDots);
+                var tmpSurrounding = new Surrounding(startDot.getOwner(), color, tmpSurroundingCoords, innerDotsCoords, []);
                 var isAlowed = true;
                 surroundings.forEach(surrounding =>{
                     if (surrounding.hasIntersectionsWith(tmpSurrounding)){
@@ -357,12 +326,26 @@ export function Field(w, h){
                     }
                 })
                 if (isAlowed){
-                    surroundings.push(tmpSurrounding);
-                    return true;
-                }
-                    
-            }
+                    var eatenDots = getEatenDots(innerDotsCoords, color);
+                    if (eatenDots.length>0){
+                        tmpSurrounding.setEatenDots(eatenDots);
+                        surroundings.push(tmpSurrounding);
 
+                        console.dir(tmpSurrounding);
+                        return true;
+                    }
+                    
+                }    
+                // фомируем результат
+                
+
+                // console.dir(eatenDots);
+
+                // 
+
+
+                // }
+            }
         }
         return false;
         
@@ -372,25 +355,6 @@ export function Field(w, h){
         return surroundings[surroundings.length-1] || false;
     }
 
-    this.disableEatenDots = function(coords){
-        var score = 0;
-        coords.forEach(coord =>{
-            self.getDot(coord.getX(), coord.getY()).setEaten();
-            score++;
-        });
-        return score;
-    }
-
-    this.recalcScores = function(color){
-        if (self.getLastSurrounding()){
-            var addScore = self.disableEatenDots(self.getLastSurrounding().getEatenCoords());
-            if (color==RED_COLOR)
-                redScore+=addScore
-            else if (color==BLUE_COLOR)
-                blueScore+=addScore;
-        }
-        
-    }
 
     this.getRedScore = function(){
         return redScore;
