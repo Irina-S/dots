@@ -1,40 +1,62 @@
-
+/* game wrapper */
 .wrapper{
     position:relative;
     top:calc(50% - 250px);
     left:calc(50% - 325px);
-    width:650px;
-    height:500px;
+    width:500px;
+    height:600px;
     border: 2px double #8f8f8f;
     display:flex;
-    /* flex-flow:row wrap;
-    justify-content: space-between;
-    align-items: center; */
+    flex-direction: column;
+    justify-content:space-between;
+    align-items:stretch;
+    /* flex-wrap:nowrap; */
+    box-sizing:border-box;
 }
 
-    .score-counter{
-        position:relative;
-        width:500px;
-        top:70px;
-        left:calc(50% - 250px);
-        height:1.7em;
-        font-size: 1.5em;
-        text-align: center;
+    .connection-state{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 5%;
     }
 
-        .scores{
-            display:inline-block;
-            color:#000000;
+        .connected{
+            color:#00ff00;
         }
 
-            .player1, .red-scores{
-                color:#ff0000;
-            }
+        .disconnected{
+            color:#ff0000;
+        }
 
-            .player2, .blue-scores{
-                color:#0000ff;
-            }
+    /* scores displaying */
+    .score-counter{
+        /* flex-grow: 0;
+        flex-shrink: 2; */
+        flex-basis: 12%;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: stretch;
+        align-content: stretch;
+        justify-content: space-between;
+    }
 
+
+        .player1, .red-scores{
+            color:#ff0000;
+            flex-basis: 50%;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        .player2, .blue-scores{
+            color:#0000ff;
+            flex-basis: 50%;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+    /* for winner displaying */
     .winner{
         position:relative;
         width:500px;
@@ -46,10 +68,12 @@
     }
 
     .field-wrapper{
-        flex:10;
+        /* flex:10; */
         border: 2px solid #8f8f8f;
         margin:1px;
-        /* padding:2px; */
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 83%;
     }
 
         .field{
