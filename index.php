@@ -20,8 +20,8 @@
         <h3 class="header">Welcome to "DOTS"!</h3>
         <div class="main-menu">
             <p>Start as:</p>
-            <button name="mode" value="leader">Leader</button>
-            <button name="mode" value="player">Player</button>
+            <button name="mode" value="leader">Player</button>
+            <button name="mode" value="player">Watcher</button>
         </div>
         <!-- скрипты -->
         <script src="scripts\index.js"></script>
