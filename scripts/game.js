@@ -7,8 +7,8 @@ import {Surrounding} from './classes/Surrounding.js';
 import {Field} from './classes/Field.js';
 
 // for network
-import {GameClient} from './network.js';
-var gameClient = new GameClient(); 
+// import {GameClient} from './network.js';
+// var gameClient = new GameClient(); 
 
 // цветовые константы
 // var RED_COLOR = '#ff0000', BLUE_COLOR = '#0000ff';

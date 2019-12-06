@@ -21,8 +21,8 @@
             <!-- <div class="winner" id="winner">
             </div> -->
             <div class="field-wrapper">
-                <div class="field"></div>
-                <!-- <svg data-x="3" data-y="2" class="field" id="field"></svg> -->
+                <!-- <div class="field"></div> -->
+                <svg data-x="3" data-y="2" class="field" id="field"></svg>
             </div>
             <!-- <div class="tabs-wrapper">
                 <select class = "tab" id="dot_color">
@@ -33,7 +33,7 @@
         </div>
         <!-- скрипты -->
         <script src="scripts\snap.svg.js"></script>
-        <!-- <script src="scripts\game.js" type="module"></script> -->
+        <script src="scripts\game.js" type="module"></script>
         <!-- <script src="scripts\game-gui.js" type="module"></script> -->
     </body>
 </html>
