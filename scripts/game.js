@@ -20,27 +20,32 @@ var field_svg = Snap("#field");
 var w = field_svg.node.clientWidth / n; 
 //высота клетки
 var h = field_svg.node.clientHeight / n; 
-
 //создание объекта поля
 var gameField= new Field(20, 20);
 // передаем ему его svg
 gameField.svg = field_svg;
+// отобржаем ход красных маркером
+var move_marker = document.createElement('div');
+move_marker.className = 'move';
+document.getElementById('player1').append(move_marker);
 
 // обработчик события на точке
 function dotClickHandler(){
     // меняем цвет на указанный
-    this.node.style.fill = document.getElementById('dot_color').value;
+    // this.node.style.fill = document.getElementById('dot_color').value;
+    this.node.style.fill = gameField.getCurMoveColor();
     //выясняем координаты щелчка
     var x = +this.node.dataset.x;
     var y = +this.node.dataset.y;
 
-    if (document.getElementById('dot_color').value==RED_COLOR){
+    // ЗДЕСЬ ЗАМЕНЕНО!!!
+    if (gameField.getCurMoveColor()==RED_COLOR){
         gameField.getDot(x,y).setRedColor();
-        gameField.getDot(x,y).setActive(document.getElementById('my-name').innerHTML);
+        gameField.getDot(x,y).setActive(document.getElementById('player1').innerHTML);
     }
     else{
         gameField.getDot(x,y).setBlueColor();
-        gameField.getDot(x,y).setActive(document.getElementById('opponent-name').innerHTML);
+        gameField.getDot(x,y).setActive(document.getElementById('player2').innerHTML);
     }
 
     // уменьшаем кол-во точек
@@ -51,24 +56,38 @@ function dotClickHandler(){
         var poly = gameField.getLastSurrounding().getPolygonCoords();
         var polygonSVGcoords = [];
         for (var i=0;i<poly.length;i++){
-            // копировать несортированные коордиаты
+            // вычисляем координаты на сетке по координатам полигона
             var polyX = poly[i].x*w;
             var polyY = poly[i].y*h;
             polygonSVGcoords.push(polyX);
             polygonSVGcoords.push(polyY);
         }
+        // строим полигон
         var polygon = field_svg.polygon(polygonSVGcoords);
-        polygon.node.classList = document.getElementById('dot_color').value==RED_COLOR?"red":"blue";
+        // закарашиваем полигон его цветом
+        polygon.node.classList = gameField.getCurMoveColor()==RED_COLOR?"red":"blue";
         // пересчитываем очки
         document.getElementById('red-scores').innerHTML = gameField.getRedScore();
         document.getElementById('blue-scores').innerHTML = gameField.getBlueScore();
     }
+    // если полигон построить невозможно
     else{
         // переключаем игрока(цвет)
         gameField.toggleColor();
-        document.getElementById('dot_color').querySelector('[value="'+gameField.getCurMoveColor()+'"]').selected = true
+        // показываем текущий цвет
+        if (gameField.getCurMoveColor()==RED_COLOR){
+            var move_marker = document.getElementById("player2").getElementsByClassName('move')[0];
+            document.getElementById("player1").append(move_marker);
+        }
+        else{
+            var move_marker = document.getElementById("player1").getElementsByClassName('move')[0];
+            document.getElementById("player2").append(move_marker);
+        }
+        // document.getElementById('dot_color').querySelector('[value="'+gameField.getCurMoveColor()+'"]').selected = true
     }
-    // если все поле занято
+    // если все поле занято - отображаем результат
+    // доработать!!!!
+    // если произошещ разрыв с сетью???
     if (gameField.getFreeDots()==0){
         if (gameField.getRedScore() == gameField.getBlueScore())
             document.getElementById('winner').innerHTML = 'Ничья!'

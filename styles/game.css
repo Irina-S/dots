@@ -67,6 +67,23 @@
             flex-shrink: 1;
         }
 
+            .move{
+                width:14px;
+                height:14px;
+                display: inline-block;
+                border-radius: 7px;
+                margin-top: 6px;
+                
+            }
+
+            .player1 > .move{
+                background:#ff0000;
+            }
+
+            .player2 > .move{
+                background:#0000ff;
+            }
+
     /* for winner displaying */
     .winner{
         position:relative;

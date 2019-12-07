@@ -13,16 +13,20 @@
             <div class="connection-state" id="connection-state"></div>
             <div class="score-counter">
                 <!-- !!!!!!!!!!!!!!что с классами!!!!???? -->
-                <div class="player1" id="my-name"><?php echo $_GET['username']?></div>
+                <div class="player1" id="player1"><?php echo $_GET['username']?>
+                    <!-- <div class="move"></div> -->
+                </div>
                 <div class="red-scores" id="red-scores">0</div>
-                <div class="player2" id="opponent-name">opponent</div>
+                <div class="player2" id="player2">opponent
+                    <!-- <div class="move"></div> -->
+                </div>
                 <div class="blue-scores" id="blue-scores">0</div>
             </div>
             <!-- <div class="winner" id="winner">
             </div> -->
             <div class="field-wrapper">
                 <!-- <div class="field"></div> -->
-                <svg data-x="3" data-y="2" class="field" id="field"></svg>
+                <svg class="field" id="field"></svg>
             </div>
             <!-- <div class="tabs-wrapper">
                 <select class = "tab" id="dot_color">
