@@ -6,12 +6,17 @@ import {Dot} from './classes/Dot.js';
 import {Surrounding} from './classes/Surrounding.js';
 import {Field} from './classes/Field.js';
 
-// for network
-// import {GameClient} from './network.js';
-// var gameClient = new GameClient(); 
+// для работы с сетью
 
-// цветовые константы
-// var RED_COLOR = '#ff0000', BLUE_COLOR = '#0000ff';
+import {GameClient} from './network.js';
+// НЕ ПРИСВАИВАТЬ ЦВЕТ ПОКА НЕ ПРИШЕЛ ОТВЕТ ОТ СЕРВЕРА
+var gameClient = new GameClient();
+// gameClient.sendData('ddd', 0);
+// gameClient.sendData('username', 0);
+// window.addEventListener('load', function(){
+//     gameClient.sendData('mmm', 0);
+// })
+
 //число клеток
 var n = 20;
 //svg элемент содержащий поле

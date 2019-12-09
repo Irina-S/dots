@@ -7,8 +7,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>DOTS</title>
     </head>
-    <body>
+    <body> 
+        <?php echo "<input type='hidden' id='username' value=".$_GET['username']."></div>"?>
         <div class="wrapper">
+           
+            
             <!-- for displaying connection status -->
             <div class="connection-state" id="connection-state"></div>
             <div class="score-counter">
