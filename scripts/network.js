@@ -1,14 +1,38 @@
 // класс GameClient предназначен для передачи информации между игроками
-export function GameClient() {
+export class GameClient {
+    host =  "localhost:8090";
+    socket = new WebSocket("ws://"+host+"/chat/server.php");
+
+    constructor(name){
+        this.username = name;
+    }
+    
+
+    get newClientPromise() {
+      return new Promise((resolve, reject) => {
+        let socket = new WebSocket("ws://demos.kaazing.com/echo");
+        console.log(socket)
+        socket.onopen = () => {
+          console.log("connected");
+          resolve(socket);
+        };
+        socket.onerror = error => reject(error);
+      })
+    }
+    get clientPromise() {
+      if (!this.promise) {
+        this.promise = this.newClientPromise
+      }
+      return this.promise;
+    }
+  }
+/* function GameClient() {
     // типы сообщений, отправляемых серверу
     var REQUEST_FOR_GAME = 0,
         NEW_MOVE = 1;
 
 
-    var host =  "localhost:8090";
-    var socket = new WebSocket("ws://"+host+"/chat/server.php");
-
-    var username=document.getElementById("username").value;
+    
 
     var self = this;
 
@@ -62,5 +86,5 @@ export function GameClient() {
         
     }
 
-    // this.sendData(username, REQUEST_FOR_GAME, {});
-}
+    this.sendData(username, REQUEST_FOR_GAME, {}); */
+// }

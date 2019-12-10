@@ -10,12 +10,10 @@ import {Field} from './classes/Field.js';
 
 import {GameClient} from './network.js';
 // НЕ ПРИСВАИВАТЬ ЦВЕТ ПОКА НЕ ПРИШЕЛ ОТВЕТ ОТ СЕРВЕРА
-var gameClient = new GameClient();
-// gameClient.sendData('ddd', 0);
-// gameClient.sendData('username', 0);
-// window.addEventListener('load', function(){
-//     gameClient.sendData('mmm', 0);
-// })
+var gameClient = new GameClient(document.getElementById("username").value);
+gameClient.clientPromise
+  .then( socket =>{socket.send('data'); console.log('sended')})
+  .catch( error => alert(error) )
 
 //число клеток
 var n = 20;
