@@ -1,6 +1,6 @@
 // класс GameClient предназначен для передачи информации между игроками
 import {Ws} from './Ws.js';
-import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_MOVE} from './net-consts.js';
+import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_ASSIGN, ENEMY_MOVE} from './net-consts.js';
 export class GameClient {
     
     
@@ -10,7 +10,7 @@ export class GameClient {
         this.ws.clientPromise
             .then(socket => {
                 this.socket = socket;
-                console.dir(this.socket);
+                // console.dir(this.socket);
                 socket.send(JSON.stringify(this.prepareMsg(0, {})));
                 let state = document.getElementById("connection-state");
                 state.innerHTML = "connection established";
@@ -50,7 +50,15 @@ export class GameClient {
     processMsg(type, data){
         switch (type){
             case COLOR_ASSIGN:{
-                
+                if (data=="red"){
+                    // устанавливаем красный маркер
+                    let move_marker = document.createElement('div');
+                    move_marker.className = 'move';
+                    document.getElementById('red_player').append(move_marker);
+                    // ождиание сторого игрока(синие)
+                    document.getElementById("blue_player").innerHTML = "waiting";
+                    // ВЫЯСНИТЬ, КТО ИГРАЕТ ПЕРВЫС!!!
+                }
                 break;
             }
             case ENEMY_MOVE:{

@@ -9,18 +9,18 @@
     </head>
     <body> 
         <?php echo "<input type='hidden' id='username' value=".$_GET['username']."></div>"?>
-        <div class="wrapper">
+        <div class="wrapper" id="game">
            
             
             <!-- for displaying connection status -->
             <div class="connection-state" id="connection-state"></div>
             <div class="score-counter">
                 <!-- !!!!!!!!!!!!!!что с классами!!!!???? -->
-                <div class="player1" id="player1"><?php echo $_GET['username']?>
+                <div class="red_player" id="red_player"><?php echo $_GET['username']?>
                     <!-- <div class="move"></div> -->
                 </div>
                 <div class="red-scores" id="red-scores">0</div>
-                <div class="player2" id="player2">opponent
+                <div class="blue_player" id="blue_player">opponent
                     <!-- <div class="move"></div> -->
                 </div>
                 <div class="blue-scores" id="blue-scores">0</div>
