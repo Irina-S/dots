@@ -1,30 +1,68 @@
 // класс GameClient предназначен для передачи информации между игроками
+import {Ws} from './Ws.js';
+import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_MOVE} from './net-consts.js';
 export class GameClient {
-    host =  "localhost:8090";
-    socket = new WebSocket("ws://"+host+"/chat/server.php");
-
+    
+    
     constructor(name){
         this.username = name;
+        this.ws = new Ws();
+        this.ws.clientPromise
+            .then(socket => {
+                this.socket = socket;
+                console.dir(this.socket);
+                socket.send(JSON.stringify(this.prepareMsg(0, {})));
+                let state = document.getElementById("connection-state");
+                state.innerHTML = "connection established";
+                if (state.classList.contains("disconnected"))
+                    state.classList.remove("disconnected");
+                state.classList.add("connected");
+
+                this.socket.onmessage = function(event){
+                    let data = JSON.parse(event.data);
+                    // let state = document.getElementById("connection-state");
+                    // state.innerHTML = event.data;
+                    console.dir(data);
+                }
+
+            })
+            .catch(error => {
+                    console.dir(error);
+                    let state = document.getElementById("connection-state");
+                    state.innerHTML = "connection lost";
+                    if (state.classList.contains("connected"))
+                        state.classList.remove("connected");
+                    state.classList.add("disconnected");
+                })
     }
     
 
-    get newClientPromise() {
-      return new Promise((resolve, reject) => {
-        let socket = new WebSocket("ws://demos.kaazing.com/echo");
-        console.log(socket)
-        socket.onopen = () => {
-          console.log("connected");
-          resolve(socket);
-        };
-        socket.onerror = error => reject(error);
-      })
+    prepareMsg(datatype, userdata){
+        let message = {
+            user:this.username,
+            type:datatype,
+            data:userdata
+        }
+        // console.dir(message);
+        return message;
     }
-    get clientPromise() {
-      if (!this.promise) {
-        this.promise = this.newClientPromise
-      }
-      return this.promise;
+
+    processMsg(type, data){
+        switch (type){
+            case COLOR_ASSIGN:{
+                
+                break;
+            }
+            case ENEMY_MOVE:{
+                break;
+            }
+        }
     }
+
+    // sendData(datatype, userdata){
+        
+    //     this.socket.send(JSON.stringify(message));
+    // }
   }
 /* function GameClient() {
     // типы сообщений, отправляемых серверу

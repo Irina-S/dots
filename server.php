@@ -74,10 +74,20 @@
         return true;
     }
 
+    function prepareMsg($type, $data){
+        $message = array(
+            "type"=>$type,
+            "data"=>$data
+        );
+        return $message;
+    }
+
     define("PORT", "8090");
 
     define("REQUEST_FOR_GAME", 0);
     define("NEW_MOVE", 1);
+    define("COLOR_ASSIGN", 2);
+    define("ENEMY_MOVE", 3);
     
 
     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -118,6 +128,7 @@
         }
         
         //1
+        // проходим по массиву сокетов
         foreach ($newSocketArray as $newSocketArrayResourse){
             //поэтапное считывание информации из сокета
             while (socket_recv($newSocketArrayResourse, $socketData, 1024, 0)>=1){
@@ -130,7 +141,7 @@
                 var_dump($messageObj);
                 echo "\n";
                 // print_r($messageObj->user);
-
+                // обернуть это в функцию!!!!!!!!!!!!!!!!
                 // проверяем тип сообщения
                 if ($messageObj->type==REQUEST_FOR_GAME){
                     // если это новый запрос на игру
@@ -138,14 +149,21 @@
                         // если все пары укомплектованны, и нужно создать новую
                         $gamePairs[] = array(
                             "red" => $messageObj->user,
-                            "blue" => NULL
+                            "blue" => NULL,
+                            "red_socket"=>$newSocketArrayResourse,
+                            "blue_socket"=>NULL
                         );
+                        send(seal(json_encode(prepareMsg(COLOR_ASSIGN, "red"))), $newSocketArrayResourse);
                         echo "Красные ".$messageObj->user;
                     }
                     else{
                         // если последний игрок ождиает противника
-                        end($gamePairs)->blue = $messageObj->user;
+                        $gamePairs[count($gamePairs)-1]["blue"] = $messageObj->user;
+                        $gamePairs[count($gamePairs)-1]["blue_socket"] = $newSocketArrayResourse;
+                        send(seal(json_encode(prepareMsg(COLOR_ASSIGN, "blue"))), $newSocketArrayResourse);
+                        // уведомление красному игроку
                         echo "Синие ".$messageObj->user;
+                        echo "\n";
                     }
                     var_dump($gamePairs);
                     echo "\n";
@@ -157,7 +175,7 @@
 
                 //рассылаем сообщение
                 // send($chatMessage, $clientSocketArray);
-                // break 2;
+                break 2;
             }
 
             ///2

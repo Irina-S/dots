@@ -8,12 +8,10 @@ import {Field} from './classes/Field.js';
 
 // для работы с сетью
 
-import {GameClient} from './network.js';
+import {GameClient} from './network/GameClient.js';
 // НЕ ПРИСВАИВАТЬ ЦВЕТ ПОКА НЕ ПРИШЕЛ ОТВЕТ ОТ СЕРВЕРА
 var gameClient = new GameClient(document.getElementById("username").value);
-gameClient.clientPromise
-  .then( socket =>{socket.send('data'); console.log('sended')})
-  .catch( error => alert(error) )
+
 
 //число клеток
 var n = 20;
