@@ -1,11 +1,12 @@
 // класс GameClient предназначен для передачи информации между игроками
 import {Ws} from './Ws.js';
-import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_ASSIGN, ENEMY_MOVE} from './net-consts.js';
+import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_ASSIGN, ENEMY_MOVE, MARKER_SET} from './net-consts.js';
 export class GameClient {
     
     
     constructor(name){
         this.username = name;
+        this.myColor = '';
         this.ws = new Ws();
         this.ws.clientPromise
             .then(socket => {
@@ -18,8 +19,9 @@ export class GameClient {
                     state.classList.remove("disconnected");
                 state.classList.add("connected");
 
-                this.socket.onmessage = function(event){
+                this.socket.onmessage = (event) => {
                     let data = JSON.parse(event.data);
+                    this.processMsg(data.type, data.data);
                     // let state = document.getElementById("connection-state");
                     // state.innerHTML = event.data;
                     console.dir(data);
@@ -50,19 +52,44 @@ export class GameClient {
     processMsg(type, data){
         switch (type){
             case COLOR_ASSIGN:{
+                
                 if (data=="red"){
-                    // устанавливаем красный маркер
-                    let move_marker = document.createElement('div');
-                    move_marker.className = 'move';
-                    document.getElementById('red_player').append(move_marker);
-                    // ождиание сторого игрока(синие)
-                    document.getElementById("blue_player").innerHTML = "waiting";
+                    this.myColor = "red";
+                    // устанавливаем красного игрока
+                    document.getElementById('red_player').innerHTML = this.username;
+                    // ождиание второго игрока(синие)
+                    document.getElementById("blue_player").innerHTML = "waiting...";
                     // ВЫЯСНИТЬ, КТО ИГРАЕТ ПЕРВЫС!!!
                 }
+                else{
+                    this.myColor = "blue";
+                    document.getElementById('blue_player').innerHTML = this.username;
+                    // устанавливаем красный маркер
+                    // ождиание второго игрока(синие)
+                    document.getElementById("red_player").innerHTML = "waiting...";
+                }
                 break;
-            }
+            };
+            case ENEMY_ASSIGN:{
+                if (this.myColor=="red")
+                    document.getElementById("blue_player").innerHTML = data;
+                else if (this.myColor=="blue")
+                    document.getElementById("red_player").innerHTML = data;
+
+                break;
+            };
             case ENEMY_MOVE:{
                 break;
+            };
+            case MARKER_SET:{
+                let move_marker = document.createElement('div');
+                move_marker.className = 'move';
+                // устанавливаем красный маркер
+                if (data=="red")
+                    document.getElementById('red_player').append(move_marker);
+                else if (data=="blue")
+                    document.getElementById('blue_player').append(move_marker);
+                    
             }
         }
     }

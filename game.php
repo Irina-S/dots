@@ -16,7 +16,7 @@
             <div class="connection-state" id="connection-state"></div>
             <div class="score-counter">
                 <!-- !!!!!!!!!!!!!!что с классами!!!!???? -->
-                <div class="red_player" id="red_player"><?php echo $_GET['username']?>
+                <div class="red_player" id="red_player">
                     <!-- <div class="move"></div> -->
                 </div>
                 <div class="red-scores" id="red-scores">0</div>

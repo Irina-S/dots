@@ -88,7 +88,8 @@
     define("NEW_MOVE", 1);
     define("COLOR_ASSIGN", 2);
     define("ENEMY_ASSIGN", 3);
-    define("ENEMY_MOVE", 3);
+    define("ENEMY_MOVE", 4);
+    define("MARKER_SET", 5);
 
     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     socket_set_option($socket,  SOL_SOCKET, SO_REUSEADDR, 0);
@@ -178,6 +179,8 @@
                         send(seal(prepareMsg(ENEMY_ASSIGN, $gamePairs[count($gamePairs)-1]["red_player"])), $gamePairs[count($gamePairs)-1]["blue_socket"]);
 
                     }
+                    send(seal(prepareMsg(MARKER_SET, "red")), $gamePairs[count($gamePairs)-1]["red_socket"]);
+                    send(seal(prepareMsg(MARKER_SET, "red")), $gamePairs[count($gamePairs)-1]["blue_socket"]);
 
                     // $userConfirm = array(
                     //     "red_player"=>$gamePairs[count($gamePairs)-1]["red_player"],
