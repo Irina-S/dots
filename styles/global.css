@@ -32,7 +32,7 @@ body{
     height: 100vh;
 }
 
-    .name-input{
+    .name-input, .new-game{
         /* margin-top:30%; */
         width:40%;
         min-width:200px;
@@ -45,11 +45,13 @@ body{
         align-items: center;
     }
 
-        .name-input > p {
+        .name-input > p , 
+        .new-game > p{
             color: #ffffff;
         }
 
-        .name-input > p, .name-input > input{
+        .name-input > p, .name-input > input,
+        .new-game > p, .new-game > input{
             margin-top:20px;
             font-size:1.2em;
         }
@@ -59,7 +61,8 @@ body{
             height:1.5em;
         }
 
-        .name-input > input[type="submit"]{
+        .name-input > input[type="submit"],
+        .new-game > input[type="submit"]{
             width:50%;
             height:1.5em;
             margin-bottom:20px;
@@ -69,7 +72,8 @@ body{
             background: #ffffff;
         }
     
-            .name-input >input[type="submit"]:hover{
+            .name-input > input[type="submit"]:hover,
+            .new-game > input[type="submit"]:hover{
                 cursor: pointer;
             }
 

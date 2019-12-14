@@ -139,7 +139,9 @@ class Game{
                 else if ((Game.gameField.getRedScore() > Game.gameField.getBlueScore()))
                     document.getElementById('winner').innerHTML = 'Красные победили!'
                 else if ((Game.gameField.getRedScore() < Game.gameField.getBlueScore()))
-                    document.getElementById('winner').innerHTML = 'Синие победили!'
+                    document.getElementById('winner').innerHTML = 'Синие победили!';
+                // отображаем результат
+                document.getElementsByClassName('filler')[0].style.display = 'block';
             }
         }
     }
@@ -153,7 +155,7 @@ class Game{
 
         // закрашиваем точку
         Game.gameField.getDot(x, y).svg.node.style.fill = Game.gameField.getCurMoveColor();
-        
+
         if (Game.gameField.getCurMoveColor()==RED_COLOR){
             Game.gameField.getDot(x,y).setRedColor();
             Game.gameField.getDot(x,y).setActive(document.getElementById('red_player').innerHTML);
@@ -215,6 +217,8 @@ class Game{
                 document.getElementById('winner').innerHTML = 'Красные победили!'
             else if ((Game.gameField.getRedScore() < Game.gameField.getBlueScore()))
                 document.getElementById('winner').innerHTML = 'Синие победили!'
+            // отображаем результат
+            document.getElementsByClassName('filler')[0].style.display = 'block';
         }
 
         

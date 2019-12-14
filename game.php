@@ -8,10 +8,19 @@
         <title>DOTS</title>
     </head>
     <body> 
-        <?php echo "<input type='hidden' id='username' value=".$_GET['username']."></div>"?>
+       
+        <div class="filler">
+            <form >
+                <div class="new-game">
+                    <!-- <?php echo "<input type='hidden' id='username' name='username' value=".$_GET['username'].">"?>
+                    <input type='hidden' name='mode' value='player'> -->
+                    <p class="winner" id="winner">winner</p><br>
+                    <input type="submit" value="New game!">
+                </div>
+                
+            </form>
+        </div>
         <div class="wrapper" id="game">
-           
-            
             <!-- for displaying connection status -->
             <div class="connection-state" id="connection-state"></div>
             <div class="score-counter">
@@ -25,8 +34,7 @@
                 </div>
                 <div class="blue-scores" id="blue-scores">0</div>
             </div>
-            <!-- <div class="winner" id="winner">
-            </div> -->
+            
             <div class="field-wrapper">
                 <!-- <div class="field"></div> -->
                 <svg class="field" id="field"></svg>
