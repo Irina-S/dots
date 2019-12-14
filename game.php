@@ -48,7 +48,7 @@
         </div>
         <!-- скрипты -->
         <script src="scripts\snap.svg.js"></script>
-        <script src="scripts\game.js" type="module"></script>
+        <script src="scripts\Game.js" type="module"></script>
         <!-- <script src="scripts\game-gui.js" type="module"></script> -->
     </body>
 </html>

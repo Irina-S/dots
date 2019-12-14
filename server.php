@@ -83,6 +83,14 @@
         return false;
     }
 
+    function findPairBySocket($gamePairs, $socket){
+        foreach ($gamePairs as $gamePair){
+            if (in_array($socket, $gamePair))
+                return $gamePair;
+        }
+        return false;
+    }
+
     function prepareMsg($type, $data){
         $message = array(
             "type"=>$type,
@@ -99,6 +107,7 @@
     define("ENEMY_ASSIGN", 3);
     define("ENEMY_MOVE", 4);
     define("MARKER_SET", 5);
+    define("ENEMY_GONE", 6);
 
     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     socket_set_option($socket,  SOL_SOCKET, SO_REUSEADDR, 0);
@@ -229,12 +238,26 @@
             //обработка клеинтов, которые покинули игру
             $socketData = @socket_read($newSocketArrayResourse, 1024, PHP_NORMAL_READ);
             if ($socketData === false){
-                echo "клиент покинул игру";
+                echo "клиент покинул игру\n";
+                // оповещаем противника
+                $pair = findPairBySocket($gamePairs, $newSocketArrayResourse);
+                if (array_search($newSocketArrayResourse, $pair)=="red_socket"){
+                    send(seal(prepareMsg(ENEMY_GONE, array())), $pair["blue_socket"]);
+                    echo "синему отправленно уведомление об уходе красного\n";
+                    print_r($pair["blue_player"]);
+                }
+                // отправка данных от синего к красному
+                else if (array_search($newSocketArrayResourse, $pair)=="blue_socket"){
+                    send(seal(prepareMsg(ENEMY_GONE,  array())), $pair["red_socket"]);
+                    echo "красному отправленно уведомление об уходе синего\n";
+                    print_r($pair["red_player"]);
+                }
                 // убираем соответсвующий сокет
                 $newSocketArrayIndex = array_search($newSocketArrayResourse, $clientSocketArray);
                 unset($clientSocketArray[$newSocketArrayIndex]);
-                // уничтожаем экземляр игры
-                // ДОПИСАТЬ!!!!!!!!!
+                // удаляем пару
+                $gamePairIndex = array_search($pair, $gamePairs);
+                unset($gamePairs[$gamePairIndex]);
             }
         }  
          

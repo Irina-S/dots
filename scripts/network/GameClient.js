@@ -1,6 +1,6 @@
 // класс GameClient предназначен для передачи информации между игроками
 import {Ws} from './Ws.js';
-import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_ASSIGN, ENEMY_MOVE, MARKER_SET} from './net-consts.js';
+import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_ASSIGN, ENEMY_MOVE, MARKER_SET, ENEMY_GONE} from './net-consts.js';
 export class GameClient {
     
     
@@ -13,7 +13,6 @@ export class GameClient {
         this.ws.clientPromise
             .then(socket => {
                 this.socket = socket;
-                // console.dir(this.socket);
                 socket.send(this.prepareMsg(REQUEST_FOR_GAME, {}));
                 let state = document.getElementById("connection-state");
                 state.innerHTML = "connection established";
@@ -23,7 +22,6 @@ export class GameClient {
 
                 this.socket.onmessage = (event) => {
                     let data = JSON.parse(event.data);
-                    console.dir(data);
                     this.processMsg(data.type, data.data);
                     // let state = document.getElementById("connection-state");
                     // state.innerHTML = event.data;
@@ -32,7 +30,6 @@ export class GameClient {
 
             })
             .catch(error => {
-                    console.dir(error);
                     let state = document.getElementById("connection-state");
                     state.innerHTML = "connection lost";
                     if (state.classList.contains("connected"))
@@ -48,7 +45,6 @@ export class GameClient {
             type:datatype,
             data:userdata
         }
-        // console.dir(message);
         return JSON.stringify(message);
     }
 
@@ -94,10 +90,13 @@ export class GameClient {
                     
             }
             case ENEMY_MOVE:{
-                console.log("enemy-move");
                 this.getMove(data.x, data.y);
                 break;
             };
+            case ENEMY_GONE:{
+                console.dir("противник ушел");
+                break;
+            }
             
         }
     }

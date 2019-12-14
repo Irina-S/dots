@@ -146,7 +146,7 @@ export function Field(w, h){
 
             
         }
-        console.dir(pathes);
+        // console.dir(pathes);
         return pathes;
     }
 
@@ -162,8 +162,8 @@ export function Field(w, h){
                     polygons.push(pathes[i][j]);
             }
         }
-        console.log('из них полигоны:');
-        console.dir(polygons);
+        // console.log('из них полигоны:');
+        // console.dir(polygons);
         return polygons.length>0?polygons:false;
     }
 
@@ -334,7 +334,7 @@ export function Field(w, h){
                             redScore+=eatenDots.length
                         else if(curMoveColor==BLUE_COLOR)
                             blueScore+=eatenDots.length;
-                        console.dir(tmpSurrounding);
+                        // console.dir(tmpSurrounding);
                         return true;
                     }
                     

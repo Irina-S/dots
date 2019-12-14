@@ -93,7 +93,6 @@ class Game{
             if (Game.gameField.trySurround(Game.gameField.getDot(x,y))){
                 // обрабатываем графику
                 var poly = Game.gameField.getLastSurrounding().getPolygonCoords();
-                console.dir(poly);
                 var w = Game.gameField.svg.node.clientWidth / Game.n;
                 var h = Game.gameField.svg.node.clientHeight / Game.n;
                 var polygonSVGcoords = [];
@@ -101,12 +100,9 @@ class Game{
                     // вычисляем координаты на сетке по координатам полигона
                     var polyX = poly[i].x*w;
                     var polyY = poly[i].y*h;
-                    console.dir(polyX);
-                    console.dir(polyY);
                     polygonSVGcoords.push(polyX);
                     polygonSVGcoords.push(polyY);
                 }
-                console.dir(polygonSVGcoords);
                 // строим полигон
                 var polygon = Game.gameField.svg.polygon(polygonSVGcoords);
                 // закарашиваем полигон его цветом
@@ -148,8 +144,6 @@ class Game{
 
     // обработчик данных о ходе игрока
     _enemyMoveHandler(event){
-        console.log('событие пойманно');
-        console.dir(event);
         let x = event.detail.x;
         let y = event.detail.y;
 
@@ -170,7 +164,6 @@ class Game{
         if (Game.gameField.trySurround(Game.gameField.getDot(x,y))){
             // обрабатываем графику
             var poly = Game.gameField.getLastSurrounding().getPolygonCoords();
-            console.dir(poly);
             var w = Game.gameField.svg.node.clientWidth / Game.n;
             var h = Game.gameField.svg.node.clientHeight / Game.n;
             var polygonSVGcoords = [];
@@ -178,12 +171,9 @@ class Game{
                 // вычисляем координаты на сетке по координатам полигона
                 var polyX = poly[i].x*w;
                 var polyY = poly[i].y*h;
-                console.dir(polyX);
-                console.dir(polyY);
                 polygonSVGcoords.push(polyX);
                 polygonSVGcoords.push(polyY);
             }
-            console.dir(polygonSVGcoords);
             // строим полигон
             var polygon = Game.gameField.svg.polygon(polygonSVGcoords);
             // закарашиваем полигон его цветом

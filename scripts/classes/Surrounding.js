@@ -57,9 +57,4 @@ export function Surrounding(owner_name, color_code, polygonArr, innerDotsArr, ea
         return false;
     }
 
-    console.dir(owner);
-    console.dir(color);
-    console.dir(polygonDots);
-    console.dir(eatenDots);
-
 }
