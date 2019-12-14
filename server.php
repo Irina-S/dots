@@ -108,6 +108,7 @@
     define("ENEMY_MOVE", 4);
     define("MARKER_SET", 5);
     define("ENEMY_GONE", 6);
+    define("GAME_OVER", 7);
 
     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     socket_set_option($socket,  SOL_SOCKET, SO_REUSEADDR, 0);
@@ -232,6 +233,23 @@
                     }
                     
                 }
+                // если игроки окончили игру
+                else if ($messageObj->type==GAME_OVER){
+                    // удаляем их сокеты
+                    $pair = findPairBySocket($gamePairs, $newSocketArrayResourse);
+                    $redSocketIndex = array_search($pair["red_socket"], $clientSocketArray);
+                    unset($clientSocketArray[$redSocketIndex]);
+                    $blueSocketIndex = array_search($pair["blue_socket"], $clientSocketArray);
+                    unset($clientSocketArray[$blueSocketIndex]);
+                    // удаляем их пару
+                    $gamePairIndex = array_search($pair, $gamePairs);
+                    foreach($gamePairs[$gamePairIndex] as $key=>$value){
+                        unset($gamePairs[$gamePairIndex][$key]);
+                    }
+                    unset($gamePairs[$gamePairIndex]);
+                    sort($gamePairs);
+
+                }
                 echo "Массив пар:\n";
                 var_dump($gamePairs);
                 echo "\n";
@@ -275,14 +293,11 @@
                 echo "\n";
                 // удаляем пару
                 $gamePairIndex = array_search($pair, $gamePairs);
-                // 
-                echo "Индекс пары\n";
-                var_dump($gamePairIndex);
-                echo "\n";
                 foreach($gamePairs[$gamePairIndex] as $key=>$value){
                     unset($gamePairs[$gamePairIndex][$key]);
                 }
                 unset($gamePairs[$gamePairIndex]);
+                sort($gamePairs);
                 echo "Массив пар после удаления пары\n";
                 var_dump($gamePairs);
                 echo "\n";

@@ -1,6 +1,6 @@
 // класс GameClient предназначен для передачи информации между игроками
 import {Ws} from './Ws.js';
-import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_ASSIGN, ENEMY_MOVE, MARKER_SET, ENEMY_GONE} from './net-consts.js';
+import {REQUEST_FOR_GAME, NEW_MOVE, COLOR_ASSIGN, ENEMY_ASSIGN, ENEMY_MOVE, MARKER_SET, ENEMY_GONE, GAME_OVER} from './net-consts.js';
 export class GameClient {
     
     
@@ -127,6 +127,10 @@ export class GameClient {
         let enemy_gone = new CustomEvent('enemyGone', {bubbles:true});
         let state = document.getElementById("connection-state");
         state.dispatchEvent(enemy_gone);
+    }
+
+    gameOver(){
+        this.socket.send(this.processMsg(GAME_OVER, {}));
     }
 
 

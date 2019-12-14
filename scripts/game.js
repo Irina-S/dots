@@ -139,6 +139,8 @@ class Game{
                     document.getElementById('winner').innerHTML = 'Синие победили!';
                 // отображаем результат
                 document.getElementsByClassName('filler')[0].style.display = 'block';
+                // отправляем уведомление о конце игры
+                Game.gameClient.gameOver();
             }
         }
     }
@@ -210,6 +212,8 @@ class Game{
                 document.getElementById('winner').innerHTML = 'Синие победили!'
             // отображаем результат
             document.getElementsByClassName('filler')[0].style.display = 'block';
+            // отправляем уведомление о конце игры
+            Game.gameClient.gameOver();
         }
 
         
