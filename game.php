@@ -12,8 +12,8 @@
         <div class="filler">
             <form >
                 <div class="new-game">
-                    <!-- <?php echo "<input type='hidden' id='username' name='username' value=".$_GET['username'].">"?>
-                    <input type='hidden' name='mode' value='player'> -->
+                    <?php echo "<input type='hidden' id='username' name='username' value=".$_GET['username'].">"?>
+                    <input type='hidden' name='mode' value='player'>
                     <p class="winner" id="winner">winner</p><br>
                     <input type="submit" value="New game!">
                 </div>

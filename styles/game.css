@@ -85,7 +85,7 @@
             }
 
     /* for winner displaying */
-    .winner{
+    /* .winner{
         position:relative;
         width:500px;
         top:70px;
@@ -93,7 +93,7 @@
         height:1.7em;
         font-size: 1.5em;
         text-align: center;
-    }
+    } */
 
     .field-wrapper{
         /* flex:10; */
