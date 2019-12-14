@@ -6,13 +6,14 @@ export class GameClient {
     
     constructor(name){
         this.username = name;
+        this.readyState = false;
         this.myColor = '';
         this.ws = new Ws();
         this.ws.clientPromise
             .then(socket => {
                 this.socket = socket;
                 // console.dir(this.socket);
-                socket.send(JSON.stringify(this.prepareMsg(0, {})));
+                socket.send(this.prepareMsg(REQUEST_FOR_GAME, {}));
                 let state = document.getElementById("connection-state");
                 state.innerHTML = "connection established";
                 if (state.classList.contains("disconnected"))
@@ -21,10 +22,11 @@ export class GameClient {
 
                 this.socket.onmessage = (event) => {
                     let data = JSON.parse(event.data);
+                    console.dir(data);
                     this.processMsg(data.type, data.data);
                     // let state = document.getElementById("connection-state");
                     // state.innerHTML = event.data;
-                    console.dir(data);
+                    // console.dir(data);
                 }
 
             })
@@ -46,7 +48,7 @@ export class GameClient {
             data:userdata
         }
         // console.dir(message);
-        return message;
+        return JSON.stringify(message);
     }
 
     processMsg(type, data){
@@ -75,10 +77,7 @@ export class GameClient {
                     document.getElementById("blue_player").innerHTML = data;
                 else if (this.myColor=="blue")
                     document.getElementById("red_player").innerHTML = data;
-
-                break;
-            };
-            case ENEMY_MOVE:{
+                this.readyState = true;
                 break;
             };
             case MARKER_SET:{
@@ -91,7 +90,31 @@ export class GameClient {
                     document.getElementById('blue_player').append(move_marker);
                     
             }
+            case ENEMY_MOVE:{
+                // console.dir(data);
+                this.getMove(data.x, data.y);
+                break;
+            };
+            
         }
+    }
+
+    // отправка данных серверу
+    makeMove(x, y){
+        // console.dir(message);
+        this.socket.send(this.prepareMsg(NEW_MOVE, {
+            x:x,
+            y:y
+        }));
+    }
+
+    // принятие данных с сервера
+    getMove(x, y){
+        let enemy_move = new CustomEvent('enemyMove', {bubbles:true, detail:{x:x, y:y}});
+        let state = document.getElementById("connection-state");
+        state.dispatchEvent(enemy_move);
+        console.dir(enemy_move);
+
     }
 
     // sendData(datatype, userdata){
@@ -140,24 +163,7 @@ export class GameClient {
         state.innerHTML = event.data;
     }
 
-    // отправка данных серверу
-    this.sendData = function(username, datatype, userdata){
-        var message = {
-            user:username,
-            type:datatype,
-            data:userdata
-        }
-        console.dir(message);
-        // if(!socket.readyState){
-        //     setTimeout(function (){
-        //         self.sendData(username, datatype, userdata);
-        //     },1000);
-        // }
-        // else{
-            socket.send(JSON.stringify(message));
-        // }
-        
-    }
+    
 
     this.sendData(username, REQUEST_FOR_GAME, {}); */
 // }

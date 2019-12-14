@@ -74,6 +74,15 @@
         return true;
     }
 
+    // поиск ппары по никнейму
+    function findPairByUser($gamePairs, $username){
+        foreach ($gamePairs as $gamePair){
+            if (in_array($username, $gamePair))
+                return $gamePair;
+        }
+        return false;
+    }
+
     function prepareMsg($type, $data){
         $message = array(
             "type"=>$type,
@@ -177,10 +186,12 @@
                         send(seal(prepareMsg(ENEMY_ASSIGN, $gamePairs[count($gamePairs)-1]["blue_player"])), $gamePairs[count($gamePairs)-1]["red_socket"]);
                         // отправляем уведомление о протинике синему игроку о красном
                         send(seal(prepareMsg(ENEMY_ASSIGN, $gamePairs[count($gamePairs)-1]["red_player"])), $gamePairs[count($gamePairs)-1]["blue_socket"]);
+                        // установка красного маркера
+                        send(seal(prepareMsg(MARKER_SET, "red")), $gamePairs[count($gamePairs)-1]["red_socket"]);
+                        send(seal(prepareMsg(MARKER_SET, "red")), $gamePairs[count($gamePairs)-1]["blue_socket"]);
 
                     }
-                    send(seal(prepareMsg(MARKER_SET, "red")), $gamePairs[count($gamePairs)-1]["red_socket"]);
-                    send(seal(prepareMsg(MARKER_SET, "red")), $gamePairs[count($gamePairs)-1]["blue_socket"]);
+                    
 
                     // $userConfirm = array(
                     //     "red_player"=>$gamePairs[count($gamePairs)-1]["red_player"],
@@ -190,13 +201,27 @@
                     var_dump($gamePairs);
                     echo "\n";
                 }
-                else{
-                    // если это ход в игре
-                    echo "Ход в игре";
+                // если это ход в игре
+                else if ($messageObj->type==NEW_MOVE){
+                    echo "Ход в игре\n";
+                    
+                    $pair = findPairByUser($gamePairs, $messageObj->user);
+                    echo "Пара найдена\n";
+                    var_dump($pair);
+                    // отправка данных от красного к синему
+                    if (array_search($messageObj->user, $pair)=="red_player"){
+                        send(seal(prepareMsg(ENEMY_MOVE, $messageObj->data)), $pair["blue_socket"]);
+                        echo "отправленно синему\n";
+                        print_r($pair["blue_player"]);
+                    }
+                    // отправка данных от синего к красному
+                    else if (array_search($messageObj->user, $pair)=="blue_player"){
+                        send(seal(prepareMsg(ENEMY_MOVE, $messageObj->data)), $pair["red_socket"]);
+                        echo "отправленно красному\n";
+                        print_r($pair["red_player"]);
+                    }
+                    
                 }
-
-                //рассылаем сообщение
-                // send($chatMessage, $clientSocketArray);
                 break 2;
             }
 

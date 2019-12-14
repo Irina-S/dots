@@ -6,10 +6,10 @@ export class Ws{
     get newClientPromise() {
         return new Promise((resolve, reject) => {
           let socket = new WebSocket("ws://"+this.host+"/chat/server.php");
-          console.log(socket);
+          // console.log(socket);
 
           socket.onopen = () => {
-            console.log("connected");
+            // console.log("connected");
             resolve(socket);
           };
 
@@ -21,7 +21,7 @@ export class Ws{
         if (!this.promise) {
             this.promise = this.newClientPromise
         }
-        console.dir(this.promise);
+        // console.dir(this.promise);
         return this.promise;
     }
 }

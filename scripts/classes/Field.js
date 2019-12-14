@@ -269,9 +269,18 @@ export function Field(w, h){
 
     }
 
-    this.getCurMoveColor = function(){
-        return curMoveColor;
+    this.getCurMoveColor = function(rgb=true){
+        if (rgb)
+            return curMoveColor;
+        else if (curMoveColor==RED_COLOR)
+            return "red"
+        else if (curMoveColor==BLUE_COLOR)
+            return "blue";
+
+        
     }
+
+
 
     this.decFreeDots = function(){
         freeDots--;

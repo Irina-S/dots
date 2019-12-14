@@ -20,7 +20,7 @@
                     <!-- <div class="move"></div> -->
                 </div>
                 <div class="red-scores" id="red-scores">0</div>
-                <div class="blue_player" id="blue_player">opponent
+                <div class="blue_player" id="blue_player">
                     <!-- <div class="move"></div> -->
                 </div>
                 <div class="blue-scores" id="blue-scores">0</div>
