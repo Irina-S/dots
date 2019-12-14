@@ -25,8 +25,12 @@ export class GameClient {
                     this.processMsg(data.type, data.data);
                     // let state = document.getElementById("connection-state");
                     // state.innerHTML = event.data;
-                    // console.dir(data);
+                    console.dir(data);
                 }
+
+                // this.socket.onclose = (event) => {
+                //     this.send(this.prepareMsg())
+                // }
 
             })
             .catch(error => {

@@ -138,8 +138,8 @@
             //устанавливаем соединение
             $header = socket_read($newSocket, 1024);
             sendHeaders($header, $newSocket, "localhost/dots", PORT);
-            var_dump($header);
-            echo "\n";
+            // var_dump($header);
+            // echo "\n";
 
             //удаляем обработанный сокет
             $newSocketArrayIndex = array_search($socket, $newSocketArray);
@@ -150,22 +150,30 @@
         // проходим по массиву сокетов
         foreach ($newSocketArray as $newSocketArrayResourse){
             //поэтапное считывание информации из сокета
+            echo "Массив пар до обработки:\n";
+                var_dump($gamePairs);
+                echo "\n";
             while (socket_recv($newSocketArrayResourse, $socketData, 1024, 0)>=1){
                 //декодируем сообщение
                 $socketMessage = unseal($socketData);
                 $messageObj = json_decode($socketMessage);
 
-                var_dump($socketMessage);
-                echo "\n";
-                var_dump($messageObj);
-                echo "\n";
+                // var_dump($socketMessage);
+                // echo "\n";
+                // var_dump($messageObj);
+                // echo "\n";
                 // print_r($messageObj->user);
                 // обернуть это в функцию!!!!!!!!!!!!!!!!
                 // проверяем тип сообщения
-                if ($messageObj->type==REQUEST_FOR_GAME){
+                echo "обработка........\n";
+                var_dump($messageObj);
+                echo "\n";
+                if ($messageObj->type===REQUEST_FOR_GAME){
                     // если это новый запрос на игру
-                    if (end($gamePairs)->blue != NULL || count($gamePairs)==0){
+                    echo "запрос на игру........\n";
+                    if ($gamePairs[count($gamePairs) - 1]["blue_player"] != NULL || count($gamePairs)==0){
                         // если все пары укомплектованны, и нужно создать новую
+                        echo "новая пара........\n";
                         $gamePairs[] = array(
                             "red_player" => $messageObj->user,
                             "blue_player" => NULL,
@@ -173,8 +181,8 @@
                             "blue_socket"=>NULL
                         );
 
-                        echo "Красные ".$messageObj->user;
-                        echo "\n";
+                        // echo "Красные ".$messageObj->user;
+                        // echo "\n";
 
                         // отправлем цвет 1 игроку
                         send(seal(prepareMsg(COLOR_ASSIGN, "red")), $newSocketArrayResourse);
@@ -186,8 +194,8 @@
                         $gamePairs[count($gamePairs)-1]["blue_socket"] = $newSocketArrayResourse;
                         
                         // уведомление красному игроку
-                        echo "Синие ".$messageObj->user;
-                        echo "\n";
+                        // echo "Синие ".$messageObj->user;
+                        // echo "\n";
 
                         // отправлем цвет 2 игроку
                         send(seal(prepareMsg(COLOR_ASSIGN, "blue")), $newSocketArrayResourse);
@@ -200,40 +208,36 @@
                         send(seal(prepareMsg(MARKER_SET, "red")), $gamePairs[count($gamePairs)-1]["blue_socket"]);
 
                     }
-                    
-
-                    // $userConfirm = array(
-                    //     "red_player"=>$gamePairs[count($gamePairs)-1]["red_player"],
-                    //     "blue_player"=>$gamePairs[count($gamePairs)-1]["blue_player"]
-                    // );
-                    // send(seal(prepareMsg(COLOR_ASSIGN, $userConfirm)), $newSocketArrayResourse);
-                    var_dump($gamePairs);
-                    echo "\n";
+                    // var_dump($gamePairs);
+                    // echo "\n";
                 }
                 // если это ход в игре
                 else if ($messageObj->type==NEW_MOVE){
                     echo "Ход в игре\n";
                     
                     $pair = findPairByUser($gamePairs, $messageObj->user);
-                    echo "Пара найдена\n";
-                    var_dump($pair);
+                    // echo "Пара найдена\n";
+                    // var_dump($pair);
                     // отправка данных от красного к синему
                     if (array_search($messageObj->user, $pair)=="red_player"){
                         send(seal(prepareMsg(ENEMY_MOVE, $messageObj->data)), $pair["blue_socket"]);
-                        echo "отправленно синему\n";
-                        print_r($pair["blue_player"]);
+                        // echo "отправленно синему\n";
+                        // print_r($pair["blue_player"]);
                     }
                     // отправка данных от синего к красному
                     else if (array_search($messageObj->user, $pair)=="blue_player"){
                         send(seal(prepareMsg(ENEMY_MOVE, $messageObj->data)), $pair["red_socket"]);
-                        echo "отправленно красному\n";
-                        print_r($pair["red_player"]);
+                        // echo "отправленно красному\n";
+                        // print_r($pair["red_player"]);
                     }
                     
                 }
+                echo "Массив пар:\n";
+                var_dump($gamePairs);
+                echo "\n";
                 break 2;
             }
-
+            
             ///2
             //обработка клеинтов, которые покинули игру
             $socketData = @socket_read($newSocketArrayResourse, 1024, PHP_NORMAL_READ);
@@ -241,23 +245,50 @@
                 echo "клиент покинул игру\n";
                 // оповещаем противника
                 $pair = findPairBySocket($gamePairs, $newSocketArrayResourse);
+                var_dump($pair);
+                echo "\n";
                 if (array_search($newSocketArrayResourse, $pair)=="red_socket"){
                     send(seal(prepareMsg(ENEMY_GONE, array())), $pair["blue_socket"]);
                     echo "синему отправленно уведомление об уходе красного\n";
                     print_r($pair["blue_player"]);
+                    echo "\n";
+                    // удаляем сокет противника
+                    $enemySocketArrayIndex = array_search($pair["blue_socket"], $clientSocketArray);
+                    unset($clientSocketArray[$enemySocketArrayIndex]);
                 }
                 // отправка данных от синего к красному
                 else if (array_search($newSocketArrayResourse, $pair)=="blue_socket"){
                     send(seal(prepareMsg(ENEMY_GONE,  array())), $pair["red_socket"]);
                     echo "красному отправленно уведомление об уходе синего\n";
                     print_r($pair["red_player"]);
+                    echo "\n";
+                    // удаляем сокет противника
+                    $enemySocketArrayIndex = array_search($pair["red_socket"], $clientSocketArray);
+                    unset($clientSocketArray[$enemySocketArrayIndex]);
                 }
                 // убираем соответсвующий сокет
                 $newSocketArrayIndex = array_search($newSocketArrayResourse, $clientSocketArray);
                 unset($clientSocketArray[$newSocketArrayIndex]);
+                // 
+                echo "Массив пар до удаления пары\n";
+                var_dump($gamePairs);
+                echo "\n";
                 // удаляем пару
                 $gamePairIndex = array_search($pair, $gamePairs);
+                // 
+                echo "Индекс пары\n";
+                var_dump($gamePairIndex);
+                echo "\n";
+                foreach($gamePairs[$gamePairIndex] as $key=>$value){
+                    unset($gamePairs[$gamePairIndex][$key]);
+                }
                 unset($gamePairs[$gamePairIndex]);
+                echo "Массив пар после удаления пары\n";
+                var_dump($gamePairs);
+                echo "\n";
+                // echo "Массив сокетов после удаления пары\n";
+                // var_dump($clientSocketArray);
+                // echo "\n";
             }
         }  
          
