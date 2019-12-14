@@ -20,8 +20,9 @@ class Game{
         // инициируем игру на элементе
         this.gameElement = document.getElementById("game");
         // добавляем слушатель события для игры
-        // ЗДЕСЬ ОШИБКА!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         this.gameElement.addEventListener('enemyMove', (event) => {this._enemyMoveHandler(event)});
+        // добавляем слушатель события ушедшего соперника
+        this.gameElement.addEventListener('enemyGone', () => { console.log('cj,snbt gjqvfyj'); this._showEnemyGone()});
         // клиент для работы с сетью
         // this.gameClient = new GameClient(document.getElementById("username").value);
         //число клеток
@@ -215,6 +216,11 @@ class Game{
 
     }
 
+    _showEnemyGone(){
+        console.log('внутри обработчика');
+        document.getElementsByClassName('filler')[0].style.display = 'block';
+        document.getElementById("winner").innerHTML = "Your enemy left the game";
+    }
 }
 
 new Game();

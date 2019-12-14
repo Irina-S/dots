@@ -99,6 +99,7 @@ export class GameClient {
             };
             case ENEMY_GONE:{
                 console.dir("противник ушел");
+                this.confirmEnemyGone();
                 break;
             }
             
@@ -120,6 +121,12 @@ export class GameClient {
         let state = document.getElementById("connection-state");
         state.dispatchEvent(enemy_move);
 
+    }
+
+    confirmEnemyGone(){
+        let enemy_gone = new CustomEvent('enemyGone', {bubbles:true});
+        let state = document.getElementById("connection-state");
+        state.dispatchEvent(enemy_gone);
     }
 
 
