@@ -226,8 +226,16 @@
             }
 
             ///2
-            //обработка клеинтов, которые покинули чат
-            // $socketData = @socket_read($newSocketArrayResourse, 1024, PHP_NORMAL_READ);
+            //обработка клеинтов, которые покинули игру
+            $socketData = @socket_read($newSocketArrayResourse, 1024, PHP_NORMAL_READ);
+            if ($socketData === false){
+                echo "клиент покинул игру";
+                // убираем соответсвующий сокет
+                $newSocketArrayIndex = array_search($newSocketArrayResourse, $clientSocketArray);
+                unset($clientSocketArray[$newSocketArrayIndex]);
+                // уничтожаем экземляр игры
+                // ДОПИСАТЬ!!!!!!!!!
+            }
         }  
          
     }

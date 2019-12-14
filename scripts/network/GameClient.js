@@ -8,6 +8,7 @@ export class GameClient {
         this.username = name;
         this.readyState = false;
         this.myColor = '';
+        this.enemyName = '';
         this.ws = new Ws();
         this.ws.clientPromise
             .then(socket => {
@@ -78,6 +79,7 @@ export class GameClient {
                 else if (this.myColor=="blue")
                     document.getElementById("red_player").innerHTML = data;
                 this.readyState = true;
+                this.enemyName = data;
                 break;
             };
             case MARKER_SET:{
@@ -114,9 +116,9 @@ export class GameClient {
         let enemy_move = new CustomEvent('enemyMove', {bubbles:true, detail:{x:x, y:y}});
         let state = document.getElementById("connection-state");
         state.dispatchEvent(enemy_move);
-        // console.dir(enemy_move);
 
     }
+
 
     // sendData(datatype, userdata){
         
