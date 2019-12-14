@@ -88,10 +88,11 @@ export class GameClient {
                     document.getElementById('red_player').append(move_marker);
                 else if (data=="blue")
                     document.getElementById('blue_player').append(move_marker);
+                break;
                     
             }
             case ENEMY_MOVE:{
-                // console.dir(data);
+                console.log("enemy-move");
                 this.getMove(data.x, data.y);
                 break;
             };
@@ -113,7 +114,7 @@ export class GameClient {
         let enemy_move = new CustomEvent('enemyMove', {bubbles:true, detail:{x:x, y:y}});
         let state = document.getElementById("connection-state");
         state.dispatchEvent(enemy_move);
-        console.dir(enemy_move);
+        // console.dir(enemy_move);
 
     }
 

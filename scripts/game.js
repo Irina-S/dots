@@ -19,7 +19,7 @@ class Game{
         this.gameElement = document.getElementById("game");
         // добавляем слушатель события для игры
         // ЗДЕСЬ ОШИБКА!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        this.gameElement.addEventListener('enemyMove', (event) => {this._enemyMoveHandler(event)});
+        this.gameElement.addEventListener('enemyMove', (event) => {console.dir(event); Game._enemyMoveHandler(event)});
         // клиент для работы с сетью
         // this.gameClient = new GameClient(document.getElementById("username").value);
         //число клеток
@@ -136,9 +136,9 @@ class Game{
     }
 
     // обработчик данных о ходе игрока
-    _enemyMoveHandler(event){
+    static _enemyMoveHandler(event){
         console.log('событие пойманно')
-        console.dir(event.data);
+        console.dir(event);
     }
 
 }
